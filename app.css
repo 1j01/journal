@@ -59,13 +59,20 @@ hr {
 	outline: 0;
 }
 
+/*
 .cell {
 	outline: 1px solid red;
 	border: 1px solid lime;
 }
-
-/*
-.entry:not([contenteditable]) a {
-	cursor: pointer;
-}
 */
+
+.from-future {
+	background: #FFCEE6;
+	border: solid 1px hsla(0, 36%, 29%, 0.47);
+	border-radius: .25em;
+	margin: 0 -.03125em;
+	padding: .0625em .25em 0;
+}
+.from-future > p {
+	margin: 0.5em 0;
+}

@@ -30,6 +30,11 @@ document.body.addEventListener "focusout", (e)->
 	# console.log "focusout", e
 	unless e.relatedTarget is editing_el
 		editing_el?.removeAttribute "contenteditable"
+		# TODO: when editing_el is the last cell (a placeholder for new entries),
+		# add a new cell for new entries
+		# (don't need to handle the case of when it's empty by
+		# not removing the attribute and not creating a new element
+		# because that should be functionally identical)
 
 document.body.addEventListener "keydown", (e)->
 	return if e.ctrlKey or e.altKey or e.metaKey
