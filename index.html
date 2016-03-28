@@ -18,12 +18,197 @@
 }</code></article>
 	<article class="entry cell"><p>Testing out a <code>bit_of(code)</code></p></article>
 	<article class="entry cell"><p>Note: this is not going to be a Markdown journal! Hopefully.</p></article>
-	<article class="entry cell"><p>god, contenteditable is shit. adding a new line and then backspacing it is increasing the font size</p></article>
+	<article class="entry cell"><p>ugh, <code>contenteditable</code> is shit. adding a new line and then backspacing it is increasing the font size</p></article>
 	<article class="entry cell"><p>and I can probably "fix" it by changing how I specify the font size (like maybe rems instead of ems)
 but it's ridiculous; I'm doing it in a completely reasonable way.</p></article>
 	<article class="entry cell"><p>yep, using <code>rem</code> "fixes it"</p></article>
-	<article class="entry cell"><p>here's a link to <a href="https://www.google.com/">https://www.google.com/</a></p></article>
+	<article class="entry cell"><p>here's a link to <a href="https://www.example.com/">https://www.example.com/</a></p></article>
 	<article class="entry cell"><p>I'm hungry</p></article>
+	
+<article class="entry cell"><p><~10:54> got enter working
+<article class="entry cell"><p>11:07 okay time to do backspace (and then maybe delete)
+<article class="entry cell"><p>11:15 enter doesn't seem to always delete the contents of the selection, and it doesn't seem to work at the start of a non-empty cell
+<article class="entry cell"><p>11:16 or at the end, sometimes
+and it seems to alternately focus nothing or create a new cell and focus it
+<article class="entry cell"><p>11:24 oh god, every other cell contains a cell inside it
+probably because the range has to have an element when doing cloneContents()
+<article class="entry cell"><p>11:25 so maybe I'll add a check for if the range is collapsed
+<article class="entry cell"><p>11:27 hm, that doesn't help
+<article class="entry cell"><p>maybe I can create a DocumentFragment
+<article class="entry cell"><p>maybe that'll have the same problems
+<article class="entry cell"><p>11:30 um...
+<article class="entry cell"><p>11:35 oh, goddammit man
+<article class="entry cell"><code>							# new_cell.appendChild range.cloneContents()
+							# new_cell.appendChild range.extractContents()
+							console.log range.extractContents().children
+							range.deleteContents()
+<article class="entry cell"><p>11:36 it was logging [] because extractContents removes the contents from the range
+<article class="entry cell"><p>11:37 but it is
+<article class="entry cell"><p>11:38 both methods give me the parent element along with it
+<article class="entry cell"><p>11:39 so I'll have to manually deal with it
+<article class="entry cell"><p>11:45 still not totally working
+
+<article class="entry cell"><code>							# new_cell.appendChild range.cloneContents()
+							# new_cell.appendChild range.extractContents()
+							# console.log range.extractContents().children
+							# console.log (a = range.extractContents()).children
+							# new_cell.appendChild a
+							# contents = range.cloneContents()
+							# if contents.children[0].classList.contains "cell"
+							# 	contents = contents.children[0].children
+							# new_cell.appendChild contents
+							{children} = range.cloneContents()
+							[{children}] = children if children[0]?.classList.contains "cell"
+							new_cell.appendChild child for child in children
+							range.deleteContents()
+
+<article class="entry cell"><p>contenteditable is the worst
+
+<article class="entry cell"><p>12:00 to be clear, it's no longer putting .cells inside .cells
+<article class="entry cell"><p>but it's having the same effective problem where it doesn't get focused
+<article class="entry cell"><p>12:01 I don't even know what's up with that
+<article class="entry cell"><p>it happens in less cases now (once instead of alternately after hitting enter after a line)
+<article class="entry cell"><p>but it probably now has other problems, who knows
+<article class="entry cell"><p>12:02 It's the worst.
+<article class="entry cell"><p>I'm going to bed.
+
+<article class="entry cell"><p>6:42 AM 3/28/2016 woke
+<article class="entry cell"><p>6:57 okay so I got the "focusing" working by giving .cell > p a min-height
+<article class="entry cell"><p>it was actually taking up no space in a weird way when the cell had a paragraph but the paragraph was empty
+<article class="entry cell"><p>6:59 (and we do want a paragraph)
+<article class="entry cell"><p>7:19 made it so you can follow links
+<article class="entry cell"><p>7:50 okay so deleting
+<article class="entry cell"><p>7:52 so can I use range.comparePoint (or range.compareBoundaryPoints),
+<article class="entry cell"><p>or will it only work when it's within the same exact container element?
+<article class="entry cell"><p>8:25 okay, I had to write this horrible loop, but I got it to work at first look
+<article class="entry cell"><p>8:46 it's not really working
+<article class="entry cell"><p>but I just added a border to .cells and now I can actually see what's going on
+<article class="entry cell"><p>it's deleting the cell and merging the contents into the previous one
+<article class="entry cell"><p>but it's copying a line break -- well, a paragraph -- into the previous cell
+<article class="entry cell"><p>so it looks like it's not joining the cells (if you can't see the borders!)
+<article class="entry cell"><p>9:04 *sigh* why am I doing any of this?
+<article class="entry cell"><p>it's not like it'll be able to merge blocks of different types when you BS/del
+<article class="entry cell"><p>9:05 I should be able to-- I was thinking I needed to have--
+<article class="entry cell"><p>9:06 ugh, I'm doing this because I want to be able to display timestamps at the paragraph level
+<article class="entry cell"><p>9:08 is it worth it, though? probably not
+<article class="entry cell"><p>9:09 I can probably get away with a prebuilt contenteditor (assuming I can find a good solid one)
+<article class="entry cell"><p>just let you write multiple paragraphs of text without 9:10 adding tons of timestamps
+<article class="entry cell"><p>and when you switch back to the app, it'll have a new cell for you?
+<article class="entry cell"><p>9:11 not sure how that would work exactly
+<article class="entry cell"><p>9:20 nope nope nope:
+
+<article class="entry cell"><code>					previous_cell = cell.previousSibling
+					if previous_cell?
+						until previous_cell.nodeType is Node.ELEMENT_NODE
+							previous_cell = previous_cell.previousSibling
+
+<article class="entry cell"><p>this:
+	previous_cell = cell.previousElementSibling
+
+<article class="entry cell"><p>9:23 oh! I need to make the element contenteditable before I can place the cursor in it, duh
+<article class="entry cell"><p>9:25 now I just need to remove the break between paragraphs when merging
+and ensure there's a paragraph when splitting
+(or maybe not use paragraphs within the cells?)</p></article>
+<article class="entry cell"><p>9:27 omg contenteditable is the worst</p></article>
+<article class="entry cell"><p>I just found a scenario (that I probably can't reproduce) where I absolutely could not delete a paragraph break/empty paragraph</p></article>
+<article class="entry cell"><p>9:28 so I did Ctrl+A within the cell and hit delete and it deleted all the text but the cell got taller</p></article>
+<article class="entry cell"><p>and subsequent deletes expanded the cell</p></article>
+<article class="entry cell"><p>like</p></article>
+<article class="entry cell"><p>wtf</p></article>
+<article class="entry cell"><p>9:29 there's no way I can fully tame this beast, this piece of shit, this ridiculous febautugre</p></article>
+<article class="entry cell"><p>10:28 https://msdn.microsoft.com/en-us/library/ms533071%28VS.85%29.aspx?f=255&MSPPError=-2147217396 This property should be marked as deprecated, and the phrase "all browsers *should* recognize" is somewhat ridiculous in this scenario.</p></article>
+<article class="entry cell"><p>10:43 can't really inspect range objects by logging them because they fricking change</p></article>
+<article class="entry cell"><p>10:46 okay, I'm gonna move this check to near the top of backspace handling:</p></article>
+
+<article class="entry cell"><code>					previous_cell = cell.previousElementSibling
+					if previous_cell?
+					
+<article class="entry cell"><p>and add a check for the previous cell being a .entry cell</p></article>
+
+<article class="entry cell"><p>11:02 this doesn't really work:</p></article>
+<article class="entry cell"><code>						frag = document.createDocumentFragment()
+						{children} = cell
+						{children} = children[0] if children[0]?.tagName is "P"
+						for child in children
+							frag.appendChild child if child?
+<article class="entry cell"><p>I think I need to do...</p></article>
+<article class="entry cell"><p>11:04 no wait, this isn't going to work:</p></article>
+<article class="entry cell"><code>						frag = document.createDocumentFragment()
+						{children} = cell
+						for child in children
+							if child?.tagName is "P"
+								for grandkid in child.children
+									frag.appendChild grandkid if grandkid?
+							else
+								frag.appendChild child if child?
+						
+						cell.parentElement.removeChild cell
+						previous_cell.appendChild frag
+<article class="entry cell"><p>I need to put the stuff in a first child paragraph if any within a last child paragraph of the previous cell if any</p></article>
+<article class="entry cell"><p>and put the rest of the stuff at the end as elements</p></article>
+
+<article class="entry cell"><p>11:37 you would think this would fucking work:</p></article>
+
+<article class="entry cell"><code>						children = Array.from cell.children
+						
+						# if the previous cell's last element and this cell's first element are both paragraphs
+						previous_cell_last_el = previous_cell.children[previous_cell.children.length - 1]
+						if previous_cell_last_el.tagName is "P" and children[0].tagName is "P"
+							console.log "got two paragraphs to merge"
+							p = children.shift()
+							merge_into_p = previous_cell_last_el
+							console.log p, p.children
+							for child in p.children
+								frag.appendChild child if child?
+							frag = document.createDocumentFragment()
+							console.log "merging", frag.children, "from", p, "into", merge_into_p
+							merge_into_p.appendChild frag
+						
+						frag = document.createDocumentFragment()
+						
+						for child in children
+							if child?.tagName is "P"
+								for grandkid in child.children
+									frag.appendChild grandkid if grandkid?
+							else
+								frag.appendChild child if child?
+						
+						cell.parentElement.removeChild cell
+						previous_cell.appendChild frag
+
+<article class="entry cell"><p>but when I console.log p, p.children</p></article>
+<article class="entry cell"><p>do you know what I get in the console?</p></article>
+<article class="entry cell"><p>a <p> with a textnode and some content, and oh bloody hell I need to use childNodes instead of children</p></article>
+<article class="entry cell"><p>11:21 probably everywhere</p></article>
+<article class="entry cell"><p>11:22 the assumsion I was going on was that since you have to use previousElementSibling instead of previousSibling when you want to deal in <article class="entry cell"><p>elements that it would not BE REVERSED WHEN ACESSING CHILDREN AS OPPOSED TO SIBLINGS</p></article>
+<article class="entry cell"><p>11:23 but anyways</p></article>
+<article class="entry cell"><p>11:29 okay, and then I just need to fix checking whether we're at the start of a cell or not</p></article>
+<article class="entry cell"><p>I got rid of `and range.startOffset is 0` from here:</p></article>
+<article class="entry cell"><code>							if range.collapsed # and range.startOffset is 0
+<article class="entry cell"><p>because it doesn't always work</p></article>
+<article class="entry cell"><p>because the offset can be an offset of elements</p></article>
+<article class="entry cell"><p>which can be empty and (should be) inconsequential</p></article>
+<article class="entry cell"><p>11:42 okay!</p></article>
+<article class="entry cell"><code>							if range.collapsed # and range.startOffset is 0
+								if range.startContainer.nodeType is Node.ELEMENT_NODE
+									# note: not very solid logic just checking innerHTML on one element
+									if range.startOffset > 0 and range.startContainer.children[range.startOffset - 1].innerHTML
+										continue # as in, don't continue
+								else
+									if range.startOffset > 0
+										continue # as in, don't continue
+
+<article class="entry cell"><p>that's bloody awful code, but it works!</p></article>
+<article class="entry cell"><p>now I just ("just", I mean come on) need to ensure paragraphs exist in new cells</p></article>
+
+<article class="entry cell"><p>11:48 god, it is not a solid thing at all
+<article class="entry cell"><p>there's just </p></article>
+  **infinite edge cases**
+                  and it sucks
+<article class="entry cell"><p>it friggin sucks</p></article>
+<article class="entry cell"><p>11:49 I'm gonna lie down</p></article>
+<article class="entry cell"><p>12:06 ghdfgh</p></article>
+
 	<article class="entry cell" contenteditable></article>
 	<script src="lib/coffee-script.js"></script>
 	<script src="app.coffee" type="text/coffeescript"></script>
