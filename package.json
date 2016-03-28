@@ -1,0 +1,32 @@
+{
+  "name": "journal",
+  "version": "0.0.1",
+  "author": "Isaiah Odhner <isaiahodhner@gmail.com>",
+  "description": "A programmer's journal",
+  "keywords": [
+    "personal",
+    "journal",
+    "log",
+    "app",
+    "programmer",
+    "programmers",
+    "programmer's",
+    "projects",
+    "diary",
+    "writing"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1j01/journal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/1j01/journal/issues"
+  },
+  "scripts": {
+    "start": "nw ."
+  },
+  "main": "index.html",
+  "devDependencies": {
+    "coffee-script": "^1.8.0"
+  }
+}

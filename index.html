@@ -1,0 +1,30 @@
+<!doctype html>
+<head>
+	<title>Journal</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#ffffff">
+	<link href="app.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<article class="entry cell"><blockquote>The human mind has a limited capacity. That capacity is best used as an index to the library to get the necessary detail. It makes no sense to waste that capacity on detail, when an index is all we need in a world overflowing with detailed content when needed, if ever needed.</blockquote></article>
+	<article class="entry cell"><p>ate lunch, played piano</p></article>
+	<article class="passage-of-time cell"><hr></article>
+	<article class="entry cell"><p>Alright, so I'm gonna make a journal app.</p></article>
+	<article class="entry cell"><p>Here's the first bit of CSS:</p></article>
+	<article class="entry cell"><code>body {
+	font-family: sans-serif;
+	margin: 0 auto;
+	max-width: 70em;
+}</code></article>
+	<article class="entry cell"><p>Testing out a <code>bit_of(code)</code></p></article>
+	<article class="entry cell"><p>Note: this is not going to be a Markdown journal! Hopefully.</p></article>
+	<article class="entry cell"><p>god, contenteditable is shit. adding a new line and then backspacing it is increasing the font size</p></article>
+	<article class="entry cell"><p>and I can probably "fix" it by changing how I specify the font size (like maybe rems instead of ems)
+but it's ridiculous; I'm doing it in a completely reasonable way.</p></article>
+	<article class="entry cell"><p>yep, using <code>rem</code> "fixes it"</p></article>
+	<article class="entry cell"><p>here's a link to <a href="https://www.google.com/">https://www.google.com/</a></p></article>
+	<article class="entry cell"><p>I'm hungry</p></article>
+	<article class="entry cell" contenteditable></article>
+	<script src="lib/coffee-script.js"></script>
+	<script src="app.coffee" type="text/coffeescript"></script>
+</body>
