@@ -16,7 +16,7 @@ function createWindow () {
 		width: 800,
 		height: 600,
 		title: 'Journal',
-		icon: 'images/app-icon/512x512.png'
+		icon: 'images/app-icon/nib-flat-5-512x512.png'
 	});
 
 	// and load the index.html of the app.
