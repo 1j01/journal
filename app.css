@@ -77,13 +77,9 @@ hr {
 	margin: 0 -1rem;
 }
 
-.entry > p {
-	min-height: 1em;
-}
-
-.entry,
-.entry > * {
+.entry {
 	cursor: text;
+	min-height: 1em;
 	outline: 0;
 }
 

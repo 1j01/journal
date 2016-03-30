@@ -14,18 +14,20 @@ editing_el = null
 
 document.body.addEventListener "mousedown", (e)->
 	link = e.target.closest "a"
+	
 	if link?
 		link.setAttribute "target", "_blank"
 		return
 	
-	cell = e.target.closest ".cell"
-	if cell?.classList.contains "entry"
-		code_el = cell.querySelector ".cell > code"
-		edit_el = code_el ? cell
+	entry = e.target.closest ".entry"
+	
+	unless editing_el is entry
 		editing_el?.removeAttribute "contenteditable"
-		editing_el = edit_el
-		edit_el.setAttribute "contenteditable", "true"
-		# TODO: allow following links
+		editing_el = null
+	
+	if entry?
+		editing_el = entry
+		entry.setAttribute "contenteditable", "true"
 
 document.body.addEventListener "focusout", (e)->
 	# console.log "focusout", e
@@ -39,17 +41,23 @@ document.body.addEventListener "focusout", (e)->
 
 document.body.addEventListener "keydown", (e)->
 	return if e.ctrlKey or e.altKey or e.metaKey
+	
+	# TODO: perform actions based on the selection ranges only, not e.target
+	
 	switch e.keyCode
 		when 13
 			return if e.shiftKey # should this be?
-			cell = e.target.closest ".cell"
-			console.log "pressed enter in", cell
-			if cell?.classList.contains "entry"
+			entry = e.target.closest ".entry"
+			console.log "pressed enter in", entry
+			if entry?
 				e.preventDefault()
 				
 				new_cell = document.createElement "article"
-				new_cell.className = "entry cell"
-				new_cell.setAttribute "contenteditable", "true"
+				new_cell.className = "cell"
+				new_entry = document.createElement "p"
+				new_entry.className = "entry"
+				new_entry.setAttribute "contenteditable", "true"
+				new_cell.appendChild new_entry
 				
 				selection = window.getSelection()
 				
@@ -58,43 +66,30 @@ document.body.addEventListener "keydown", (e)->
 				if selection.rangeCount
 					for i in [0...selection.rangeCount]
 						range = selection.getRangeAt(i)
-						# range.setEnd cell, 1
-						range.setEndAfter cell
+						# range.setEnd entry, 1
+						range.setEndAfter entry
 						unless range.collapsed
-							# new_cell.appendChild range.cloneContents()
-							# new_cell.appendChild range.extractContents()
-							# console.log range.extractContents().childNodes
-							# console.log (a = range.extractContents()).childNodes
-							# new_cell.appendChild a
-							# contents = range.cloneContents()
-							# if contents.childNodes[0].classList.contains "cell"
-							# 	contents = contents.childNodes[0].childNodes
-							# new_cell.appendChild contents
 							{childNodes} = range.cloneContents()
-							{childNodes} = childNodes[0] if childNodes[0]?.classList.contains "cell"
+							{childNodes} = childNodes[0] if childNodes[0]?.classList.contains "entry" # "cell"? needed?
 							# console.log child for child in childNodes
-							# new_cell.appendChild child for child in childNodes
+							# new_entry.appendChild child for child in childNodes
 							for child in childNodes
-								console.log "new_cell.appendChild", child
-								new_cell.appendChild child if child?
+								console.log "new_entry.appendChild", child
+								new_entry.appendChild child if child?
 							range.deleteContents()
 				
-				# document.body.insertAfter new_cell, cell
-				document.body.insertBefore new_cell, cell.nextSibling
+				document.body.insertBefore new_cell, entry.closest(".cell").nextSibling
 				
-				if new_cell.children.length is 0
-					new_cell.appendChild document.createElement "p"
-				
-				new_cell.focus()
+				new_entry.focus()
 		
 		when 8 # backspace
-			cell = e.target.closest ".cell"
-			if cell?.classList.contains "entry"
+			entry = e.target.closest ".entry"
+			if entry?
 				selection = window.getSelection()
 				
-				previous_cell = cell.previousElementSibling
-				if previous_cell?.classList.contains "entry"
-					console.log "previous_cell:", previous_cell
+				previous_entry = entry.closest(".cell").previousElementSibling.querySelector(".entry")
+				if previous_entry?
+					console.log "previous_entry:", previous_entry
 					
 					at_start = no
 					
@@ -102,7 +97,7 @@ document.body.addEventListener "keydown", (e)->
 						for i in [0...selection.rangeCount]
 							range = selection.getRangeAt(i)
 							
-							# console.log range.comparePoint cell, 0
+							# console.log range.comparePoint entry, 0
 							# range.compareBoundaryPoints Range.START_TO_START, other_range
 							
 							console.log "range", range.collapsed, range.startOffset, range.startContainer
@@ -110,15 +105,17 @@ document.body.addEventListener "keydown", (e)->
 							if range.collapsed # and range.startOffset is 0
 								if range.startContainer.nodeType is Node.ELEMENT_NODE
 									# note: not very solid logic just checking innerHTML on one element
-									if range.startOffset > 0 and range.startContainer.children[range.startOffset - 1].innerHTML
-										continue # as in, don't continue
+									if range.startOffset > 0 and range.startContainer.children[range.startOffset - 1]?.innerHTML
+										continue # as in don't continue
 								else
 									if range.startOffset > 0
-										continue # as in, don't continue
+										text = range.startContainer.nodeValue
+										if range.startOffset > "#{text}|".length - "#{text}|".trim().length
+											continue # as in don't continue
 								container = range.startContainer
 								loop
 									if container?
-										if container is cell
+										if container is entry
 											at_start = yes
 											break
 										else
@@ -134,7 +131,7 @@ document.body.addEventListener "keydown", (e)->
 												break
 										container = container.parentElement
 									else
-										console.log "didn't find a parent element eq to", cell
+										console.log "didn't find a parent element eq to", entry
 										break
 								# if range.startContainer
 					else
@@ -144,20 +141,20 @@ document.body.addEventListener "keydown", (e)->
 					
 					if at_start
 						e.preventDefault()
-						previous_cell.setAttribute "contenteditable", "true"
-						place_cursor_at_end_of_contenteditable_element previous_cell
+						previous_entry.setAttribute "contenteditable", "true"
+						place_cursor_at_end_of_contenteditable_element previous_entry
 						# TODO: use DocumentFragment to transfer I guess
-						# for child in cell.childNodes
-						# 	previous_cell.appendChild child
+						# for child in entry.childNodes
+						# 	previous_entry.appendChild child
 						
-						childNodes = Array.from cell.childNodes
+						childNodes = Array.from entry.childNodes
 						
-						# if the previous cell's last element and this cell's first element are both paragraphs
-						previous_cell_last_el = previous_cell.childNodes[previous_cell.childNodes.length - 1]
-						if previous_cell_last_el?.tagName is "P" and childNodes[0]?.tagName is "P"
+						# if the previous entry's last element and this entry's first element are both paragraphs
+						previous_entry_last_el = previous_entry.childNodes[previous_entry.childNodes.length - 1]
+						if previous_entry_last_el?.tagName is "P" and childNodes[0]?.tagName is "P"
 							console.log "got two paragraphs to merge"
 							p = childNodes.shift()
-							merge_into_p = previous_cell_last_el
+							merge_into_p = previous_entry_last_el
 							console.log p, p.childNodes
 							frag = document.createDocumentFragment()
 							for child in p.childNodes
@@ -174,8 +171,9 @@ document.body.addEventListener "keydown", (e)->
 							else
 								frag.appendChild child if child?
 						
+						cell = entry.closest ".cell"
 						cell.parentElement.removeChild cell
-						previous_cell.appendChild frag
+						previous_entry.appendChild frag
 
 		
 		when 46 # delete
