@@ -17,11 +17,7 @@ p+*, *+p, *+h1, *+h2, *+h3, *+h4, *+h5, *+ul, *+ol {
 blockquote {
 	font-style: italic;
 	color: #555;
-	/*background: #f9f9f9;*/
-	/*border-left: 10px solid #ccc;*/
-	/*margin: 10px -1em;*/
-	margin-left: -1em;
-	margin-right: -1em;
+	margin: 0 -1em;
 	padding: 0.5em 10px;
 	padding-left: 2em;
 	quotes: "\201C" "\201D" "\2018" "\2019";

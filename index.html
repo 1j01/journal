@@ -40,29 +40,29 @@ but it's ridiculous; I'm doing it in a completely reasonable way.</p></article>
 <article class="entry cell"><p>maybe that'll have the same problems</p></article>
 <article class="entry cell"><p>11:30 um...</p></article>
 <article class="entry cell"><p>11:35 oh, goddammit man</p></article>
-<article class="entry cell"><code>							# new_cell.appendChild range.cloneContents()
-							# new_cell.appendChild range.extractContents()
-							console.log range.extractContents().children
-							range.deleteContents()</code></article>
+<article class="entry cell"><code># new_cell.appendChild range.cloneContents()
+# new_cell.appendChild range.extractContents()
+console.log range.extractContents().children
+range.deleteContents()</code></article>
 <article class="entry cell"><p>11:36 it was logging [] because extractContents removes the contents from the range</p></article>
 <article class="entry cell"><p>11:37 but it is</p></article>
 <article class="entry cell"><p>11:38 both methods give me the parent element along with it</p></article>
 <article class="entry cell"><p>11:39 so I'll have to manually deal with it</p></article>
 <article class="entry cell"><p>11:45 still not totally working</p></article>
 
-<article class="entry cell"><code>							# new_cell.appendChild range.cloneContents()
-							# new_cell.appendChild range.extractContents()
-							# console.log range.extractContents().children
-							# console.log (a = range.extractContents()).children
-							# new_cell.appendChild a
-							# contents = range.cloneContents()
-							# if contents.children[0].classList.contains "cell"
-							# 	contents = contents.children[0].children
-							# new_cell.appendChild contents
-							{children} = range.cloneContents()
-							[{children}] = children if children[0]?.classList.contains "cell"
-							new_cell.appendChild child for child in children
-							range.deleteContents()</code></article>
+<article class="entry cell"><code># new_cell.appendChild range.cloneContents()
+# new_cell.appendChild range.extractContents()
+# console.log range.extractContents().children
+# console.log (a = range.extractContents()).children
+# new_cell.appendChild a
+# contents = range.cloneContents()
+# if contents.children[0].classList.contains "cell"
+# 	contents = contents.children[0].children
+# new_cell.appendChild contents
+{children} = range.cloneContents()
+[{children}] = children if children[0]?.classList.contains "cell"
+new_cell.appendChild child for child in children
+range.deleteContents()</code></article>
 
 <article class="entry cell"><p>contenteditable is the worst</p></article>
 
@@ -101,13 +101,13 @@ but it's ridiculous; I'm doing it in a completely reasonable way.</p></article>
 <article class="entry cell"><p>9:11 not sure how that would work exactly</p></article>
 <article class="entry cell"><p>9:20 nope nope nope:</p></article>
 
-<article class="entry cell"><code>					previous_cell = cell.previousSibling
-					if previous_cell?
-						until previous_cell.nodeType is Node.ELEMENT_NODE
-							previous_cell = previous_cell.previousSibling</code></article>
+<article class="entry cell"><code>previous_cell = cell.previousSibling
+if previous_cell?
+	until previous_cell.nodeType is Node.ELEMENT_NODE
+		previous_cell = previous_cell.previousSibling</code></article>
 
 <article class="entry cell"><p>this:</p></article>
-<article class="entry cell"><code>	previous_cell = cell.previousElementSibling</code></article>
+<article class="entry cell"><code>previous_cell = cell.previousElementSibling</code></article>
 
 <article class="entry cell"><p>9:23 oh! I need to make the element contenteditable before I can place the cursor in it, duh</p></article>
 <article class="entry cell"><p>9:25 now I just need to remove the break between paragraphs when merging</p></article>
@@ -124,61 +124,61 @@ but it's ridiculous; I'm doing it in a completely reasonable way.</p></article>
 <article class="entry cell"><p>10:43 can't really inspect range objects by logging them because they fricking change</p></article>
 <article class="entry cell"><p>10:46 okay, I'm gonna move this check to near the top of backspace handling:</p></article>
 
-<article class="entry cell"><code>					previous_cell = cell.previousElementSibling
-					if previous_cell?</code></article>
+<article class="entry cell"><code>previous_cell = cell.previousElementSibling
+if previous_cell?</code></article>
 					
 <article class="entry cell"><p>and add a check for the previous cell being a .entry cell</p></article>
 
 <article class="entry cell"><p>11:02 this doesn't really work:</p></article>
-<article class="entry cell"><code>						frag = document.createDocumentFragment()
-						{children} = cell
-						{children} = children[0] if children[0]?.tagName is "P"
-						for child in children
-							frag.appendChild child if child?</code></article>
+<article class="entry cell"><code>frag = document.createDocumentFragment()
+{children} = cell
+{children} = children[0] if children[0]?.tagName is "P"
+for child in children
+	frag.appendChild child if child?</code></article>
 <article class="entry cell"><p>I think I need to do...</p></article>
 <article class="entry cell"><p>11:04 no wait, this isn't going to work:</p></article>
-<article class="entry cell"><code>						frag = document.createDocumentFragment()
-						{children} = cell
-						for child in children
-							if child?.tagName is "P"
-								for grandkid in child.children
-									frag.appendChild grandkid if grandkid?
-							else
-								frag.appendChild child if child?
-						
-						cell.parentElement.removeChild cell
-						previous_cell.appendChild frag</code></article>
+<article class="entry cell"><code>frag = document.createDocumentFragment()
+{children} = cell
+for child in children
+	if child?.tagName is "P"
+		for grandkid in child.children
+			frag.appendChild grandkid if grandkid?
+	else
+		frag.appendChild child if child?
+
+cell.parentElement.removeChild cell
+previous_cell.appendChild frag</code></article>
 <article class="entry cell"><p>I need to put the stuff in a first child paragraph if any within a last child paragraph of the previous cell if any</p></article>
 <article class="entry cell"><p>and put the rest of the stuff at the end as elements</p></article>
 
 <article class="entry cell"><p>11:37 you would think this would work:</p></article>
 
-<article class="entry cell"><code>						children = Array.from cell.children
-						
-						# if the previous cell's last element and this cell's first element are both paragraphs
-						previous_cell_last_el = previous_cell.children[previous_cell.children.length - 1]
-						if previous_cell_last_el.tagName is "P" and children[0].tagName is "P"
-							console.log "got two paragraphs to merge"
-							p = children.shift()
-							merge_into_p = previous_cell_last_el
-							console.log p, p.children
-							for child in p.children
-								frag.appendChild child if child?
-							frag = document.createDocumentFragment()
-							console.log "merging", frag.children, "from", p, "into", merge_into_p
-							merge_into_p.appendChild frag
-						
-						frag = document.createDocumentFragment()
-						
-						for child in children
-							if child?.tagName is "P"
-								for grandkid in child.children
-									frag.appendChild grandkid if grandkid?
-							else
-								frag.appendChild child if child?
-						
-						cell.parentElement.removeChild cell
-						previous_cell.appendChild frag</code></article>
+<article class="entry cell"><code>children = Array.from cell.children
+
+# if the previous cell's last element and this cell's first element are both paragraphs
+previous_cell_last_el = previous_cell.children[previous_cell.children.length - 1]
+if previous_cell_last_el.tagName is "P" and children[0].tagName is "P"
+	console.log "got two paragraphs to merge"
+	p = children.shift()
+	merge_into_p = previous_cell_last_el
+	console.log p, p.children
+	for child in p.children
+		frag.appendChild child if child?
+	frag = document.createDocumentFragment()
+	console.log "merging", frag.children, "from", p, "into", merge_into_p
+	merge_into_p.appendChild frag
+
+frag = document.createDocumentFragment()
+
+for child in children
+	if child?.tagName is "P"
+		for grandkid in child.children
+			frag.appendChild grandkid if grandkid?
+	else
+		frag.appendChild child if child?
+
+cell.parentElement.removeChild cell
+previous_cell.appendChild frag</code></article>
 
 <article class="entry cell"><p>but when I <code>console.log p, p.children</code></p></article>
 <article class="entry cell"><p>do you know what I get in the console?</p></article>
@@ -188,22 +188,22 @@ but it's ridiculous; I'm doing it in a completely reasonable way.</p></article>
 <article class="entry cell"><p>11:23 but anyways</p></article>
 <article class="entry cell"><p>11:29 okay, and then I just need to fix checking whether we're at the start of a cell or not</p></article>
 <article class="entry cell"><p>I got rid of <code>and range.startOffset is 0</code> from here:</p></article>
-<article class="entry cell"><code>							if range.collapsed # and range.startOffset is 0</code></article>
+<article class="entry cell"><code>if range.collapsed # and range.startOffset is 0</code></article>
 <article class="entry cell"><p>because it doesn't always work</p></article>
 <article class="entry cell"><p>because the offset can be an offset of elements</p></article>
 <article class="entry cell"><p>which can be empty and (should be) inconsequential</p></article>
 <article class="entry cell"><p>11:42 okay!</p></article>
-<article class="entry cell"><code>							if range.collapsed # and range.startOffset is 0
-								if range.startContainer.nodeType is Node.ELEMENT_NODE
-									# note: not very solid logic just checking innerHTML on one element
-									if range.startOffset > 0 and range.startContainer.children[range.startOffset - 1].innerHTML
-										continue # as in, don't continue
-								else
-									if range.startOffset > 0
-										continue # as in, don't continue</code></article>
+<article class="entry cell"><code>if range.collapsed # and range.startOffset is 0
+	if range.startContainer.nodeType is Node.ELEMENT_NODE
+		# note: not very solid logic just checking innerHTML on one element
+		if range.startOffset > 0 and range.startContainer.children[range.startOffset - 1].innerHTML
+			continue # as in, don't continue
+	else
+		if range.startOffset > 0
+			continue # as in, don't continue</code></article>
 
 <article class="entry cell"><p>that's bloody awful code, but it works!*</p></article>
-<article class="entry cell from-future"><p>*in some cases, as noted in the code</p></article>
+<article class="entry cell from-future"><p>*as noted in the code, it only works in some cases</p></article>
 <article class="entry cell"><p>now I just ("just", I mean come on) need to ensure paragraphs exist in new cells</p></article>
 
 <article class="entry cell"><p>11:48 god, it is not a solid thing at all
