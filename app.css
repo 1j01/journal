@@ -1,8 +1,8 @@
 
 body {
 	margin: 0 auto;
-	padding: 0 1em;
-	max-width: 60em;
+	padding: 0 1rem;
+	max-width: 60rem;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	font-family: sans-serif;
@@ -11,32 +11,32 @@ body {
 }
 
 p+*, *+p, *+h1, *+h2, *+h3, *+h4, *+h5, *+ul, *+ol {
-	margin-top: 1em;
+	margin-top: 1rem;
 }
 
 blockquote {
 	font-style: italic;
 	color: #555;
-	margin: 0 -1em;
-	padding: 0.5em 10px;
-	padding-left: 2em;
+	margin: 0 -1rem;
+	padding: 0.5rem 10px;
+	padding-left: 2rem;
 	quotes: "\201C" "\201D" "\2018" "\2019";
 	position: relative;
 }
 blockquote:before {
 	position: absolute;
 	left: 0;
-	top: 0.5em;
+	top: 2rem;
 	color: #ccc;
 	content: open-quote;
-	font-size: 4em;
-	line-height: 0.1em;
-	margin-right: 0.25em;
-	vertical-align: -0.4em;
+	font-size: 4rem;
+	line-height: 0.4rem;
+	margin-right: 1rem;
+	vertical-align: -0.4rem;
 }
-@media (min-width: 77em) {
+@media (min-width: 70rem) {
 	blockquote {
-		margin-left: -2em;
+		margin-left: -2rem;
 	}
 }
 
@@ -70,7 +70,7 @@ hr {
 	margin: 0 -10em;*/
 	padding: 1em 1em;
 	margin: 0 -1em;
-	border-radius: .25em;
+	/*border-radius: .25em;*/
 }
 
 .cell > hr {
@@ -81,7 +81,8 @@ hr {
 	min-height: 1em;
 }
 
-.entry {
+.entry,
+.entry > * {
 	cursor: text;
 	outline: 0;
 }
