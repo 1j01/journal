@@ -43,6 +43,7 @@ document.body.addEventListener "keydown", (e)->
 	return if e.ctrlKey or e.altKey or e.metaKey
 	
 	# TODO: perform actions based on the selection ranges only, not e.target
+	# TODO: handle arrow keys (travel between cells)
 	
 	switch e.keyCode
 		when 13
@@ -71,11 +72,10 @@ document.body.addEventListener "keydown", (e)->
 						unless range.collapsed
 							{childNodes} = range.cloneContents()
 							{childNodes} = childNodes[0] if childNodes[0]?.classList.contains "entry" # "cell"? needed?
-							# console.log child for child in childNodes
-							# new_entry.appendChild child for child in childNodes
-							for child in childNodes
+							for child in Array.from(childNodes)
 								console.log "new_entry.appendChild", child
-								new_entry.appendChild child if child?
+								new_entry.appendChild child
+							# TODO: use DocumentFragment to transfer I guess
 							range.deleteContents()
 				
 				document.body.insertBefore new_cell, entry.closest(".cell").nextSibling
@@ -143,9 +143,6 @@ document.body.addEventListener "keydown", (e)->
 						e.preventDefault()
 						previous_entry.setAttribute "contenteditable", "true"
 						place_cursor_at_end_of_contenteditable_element previous_entry
-						# TODO: use DocumentFragment to transfer I guess
-						# for child in entry.childNodes
-						# 	previous_entry.appendChild child
 						
 						childNodes = Array.from entry.childNodes
 						
@@ -157,8 +154,8 @@ document.body.addEventListener "keydown", (e)->
 							merge_into_p = previous_entry_last_el
 							console.log p, p.childNodes
 							frag = document.createDocumentFragment()
-							for child in p.childNodes
-								frag.appendChild child if child?
+							for child in Array.from(p.childNodes)
+								frag.appendChild child
 							console.log "merging", frag.childNodes, "from", p, "into", merge_into_p
 							merge_into_p.appendChild frag
 						
@@ -166,8 +163,8 @@ document.body.addEventListener "keydown", (e)->
 						
 						for child in childNodes
 							if child?.tagName is "P"
-								for grandkid in child.childNodes
-									frag.appendChild grandkid if grandkid?
+								for grandkid in Array.from(child.childNodes)
+									frag.appendChild grandkid
 							else
 								frag.appendChild child if child?
 						
