@@ -40,6 +40,9 @@ blockquote:before {
 	}
 }
 
+a[href] {
+	color: #2196F3;
+}
 
 p > code,
 li > code,
