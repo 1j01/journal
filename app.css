@@ -14,6 +14,37 @@ p+*, *+p, *+h1, *+h2, *+h3, *+h4, *+h5, *+ul, *+ol {
 	margin-top: 1em;
 }
 
+blockquote {
+	font-style: italic;
+	color: #555;
+	/*background: #f9f9f9;*/
+	/*border-left: 10px solid #ccc;*/
+	/*margin: 10px -1em;*/
+	margin-left: -1em;
+	margin-right: -1em;
+	padding: 0.5em 10px;
+	padding-left: 2em;
+	quotes: "\201C" "\201D" "\2018" "\2019";
+	position: relative;
+}
+blockquote:before {
+	position: absolute;
+	left: 0;
+	top: 0.5em;
+	color: #ccc;
+	content: open-quote;
+	font-size: 4em;
+	line-height: 0.1em;
+	margin-right: 0.25em;
+	vertical-align: -0.4em;
+}
+@media (min-width: 77em) {
+	blockquote {
+		margin-left: -2em;
+	}
+}
+
+
 p > code,
 li > code,
 samp {
