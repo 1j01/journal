@@ -6,6 +6,7 @@ place_cursor_at_end_of_contenteditable_element = (el)->
 	selection = window.getSelection()
 	selection.removeAllRanges() # remove any selections already made
 	selection.addRange(range) # make new the range the visible selection
+	# NOTE: might need to use this solution instead: http://stackoverflow.com/a/19588665/2624876
 
 
 editing_el = null

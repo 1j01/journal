@@ -23,10 +23,10 @@
     "url": "https://github.com/1j01/journal/issues"
   },
   "scripts": {
-    "start": "nw ."
+    "start": "electron main.js"
   },
   "main": "index.html",
   "devDependencies": {
-    "coffee-script": "^1.8.0"
+    "electron-prebuilt": "^0.37.2"
   }
 }
