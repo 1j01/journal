@@ -59,7 +59,7 @@ hr {
 }
 
 .cell {
-	margin: 0.5em 0;
+	margin: 0.5rem 0;
 }
 
 .cell > code {
@@ -69,15 +69,12 @@ hr {
 	background: black;
 	color: white;
 	margin: 0;
-	/*padding: 1em 10em;
-	margin: 0 -10em;*/
-	padding: 1em 1em;
-	margin: 0 -1em;
-	/*border-radius: .25em;*/
+	padding: 1rem 1rem;
+	margin: 0 -1rem;
 }
 
 .cell > hr {
-	margin: 0 -1em;
+	margin: 0 -1rem;
 }
 
 .entry > p {
