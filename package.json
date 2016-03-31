@@ -23,10 +23,14 @@
     "url": "https://github.com/1j01/journal/issues"
   },
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "test": "electron-mocha --renderer --compilers coffee:coffee-script/register --ui bdd ./tests"
   },
   "main": "index.html",
   "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-script": "^1.10.0",
+    "electron-mocha": "^1.0.0",
     "electron-prebuilt": "^0.37.2"
   }
 }

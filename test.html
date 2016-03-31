@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Mocha Tests</title>
+		<link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+		<link href="app.css" rel="stylesheet" />
+		<style>
+			.cell {
+				outline: 1px dotted red;
+				/*border: 1px dashed blue;*/
+				background: rgba(255, 255, 200, 0.5);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="mocha"></div>
+
+		<script src="https://cdn.rawgit.com/jquery/jquery/2.1.4/dist/jquery.min.js"></script>
+		<script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
+		<script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+
+		<script>mocha.setup('tdd')</script>
+		<script src="lib/coffee-script.js"></script>
+		<script src="app.coffee" type="text/coffeescript"></script>
+		<script src="tests/content-editing.coffee" type="text/coffeescript"></script>
+		<script type="text/coffeescript">
+			mocha.checkLeaks()
+			mocha.run()
+		</script>
+		
+		<article class="cell"><p class="entry">This is a test entry.</p></article>
+		<article class="cell"><p class="entry">This is another test entry.</p></article>
+		<article class="cell"><p class="entry">This is yet another test entry.</p></article>
+		<article class="cell"><p class="entry">Here's another.</p></article>
+		<article class="cell"><p class="entry">Another one.</p></article>
+		<article class="cell"><p class="entry" id=
+		"entry-with-bold">Here's an entry with some <b>bold</b> text.</p></article>
+		<article class="cell"><p class="entry" id=
+		"entry-with-link">Here's an entry with a link: <a href="https://example.com/">https://example.com/</a></p></article>
+		<article class="cell"><p class="entry" id=
+		"empty-entry"></p></article>
+
+	</body>
+</html>
