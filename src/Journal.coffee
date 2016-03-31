@@ -11,4 +11,7 @@ module.exports =
 			@onChange = (editorState) => @setState {editorState}
 		
 		render: ->
-			E ".journal", "Hello World!"
+			{editorState} = @state
+			{onChange} = @
+			E ".journal",
+				E Editor, {editorState, onChange}

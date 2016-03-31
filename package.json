@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "electron main.js",
-    "test": "electron-mocha --renderer --compilers coffee:coffee-script/register --ui bdd ./tests"
+    "test": "test.html"
   },
   "main": "index.html",
   "devDependencies": {
