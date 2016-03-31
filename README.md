@@ -3,6 +3,14 @@
 
 A programmer's journal
 
+## Install
+
+`npm i`
+
+## Run
+
+`npm start`
+
 ## Planned Features
 
 * Saving and loading, so you can actually use this

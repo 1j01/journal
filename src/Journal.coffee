@@ -14,4 +14,8 @@ module.exports =
 			{editorState} = @state
 			{onChange} = @
 			E ".journal",
-				E Editor, {editorState, onChange}
+				E Editor, {
+					editorState
+					onChange
+					spellCheck: on
+				}

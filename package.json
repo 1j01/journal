@@ -23,6 +23,7 @@
     "url": "https://github.com/1j01/journal/issues"
   },
   "scripts": {
+    "postinstall": "electron-rebuild",
     "start": "electron main.js",
     "test": "test.html"
   },
@@ -30,10 +31,13 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coffee-script": "^1.10.0",
-    "electron-prebuilt": "^0.37.2"
+    "electron-prebuilt": "^0.37.2",
+    "electron-rebuild": "^1.1.3"
   },
   "dependencies": {
     "draft-js": "^0.3.0",
+    "electron-editor-context-menu": "^1.1.1",
+    "electron-spell-check-provider": "^1.0.0",
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
     "react-script": "^2.0.4"
