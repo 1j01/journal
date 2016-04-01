@@ -58,11 +58,11 @@ hr {
 	border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.cell {
+.block {
 	margin: 0.5rem 0;
 }
 
-.cell > code {
+.block > code {
 	display: block;
 	white-space: pre-wrap;
 	tab-size: 4;
@@ -73,7 +73,7 @@ hr {
 	margin: 0 -1rem;
 }
 
-.cell > hr {
+.block > hr {
 	margin: 0 -1rem;
 }
 
@@ -81,10 +81,27 @@ hr {
 	cursor: text;
 	min-height: 1em;
 	outline: 0;
+	position: relative;
+}
+
+.timestamp {
+	font-size: 0.6rem;
+	color: gray;
+}
+@media (min-width: 70rem) {
+	.timestamp {
+		position: absolute;
+		right: 100%;
+		margin-right: 0.5rem;
+	}
+}
+
+.controls {
+	float: right;
 }
 
 /*
-.cell {
+.block {
 	outline: 1px solid red;
 	border: 1px solid lime;
 }
