@@ -1,4 +1,6 @@
 
+journal.json
+
 node_modules/
 temp/
 *.log

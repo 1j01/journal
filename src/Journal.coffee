@@ -104,10 +104,6 @@ module.exports =
 			super
 			
 			compositeDecorator = new CompositeDecorator [
-				# {
-				# 	strategy: handleStrategy,
-				# 	component: HandleSpan,
-				# }
 				{
 					strategy: hashtagStrategy
 					component: HashtagSpan
@@ -116,8 +112,12 @@ module.exports =
 			
 			@state = editorState: EditorState.createEmpty(compositeDecorator)
 			
-			@onChange = (editorState) =>
+			@onChange = (editorState)=>
+				@props.onChange(editorState)
 				@setState {editorState}
+			
+			@setContentState = (contentState)=>
+				@setState editorState: EditorState.createWithContent(contentState, compositeDecorator)
 			
 			@renderBlock = (contentBlock)=>
 				switch contentBlock.getType()

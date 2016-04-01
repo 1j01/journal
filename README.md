@@ -13,11 +13,9 @@ A programmer's journal
 
 ## Planned Features
 
-* Saving and loading, so you can actually use this
-* Cloud integration, so you can use this anywhere
-* Sane, solid, consistent content editing
-* Desktop app
-* "Reverse infinite scrolling"
+* Cloud integration, or at least a configurable directory
+* Desktop and mobile
+* "Reverse infinite scrolling" because journals can get very long
 * Future asides: write notes on past entries
   (you can also just edit old entries, which you can use mainly for spelling corrections or be more liberal with)
 * Search
