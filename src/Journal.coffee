@@ -1,10 +1,10 @@
 
 E = require "react-script"
 React = require "react"
+ReactDOM = require "react-dom"
 {Editor, EditorState, RichUtils, CompositeDecorator} = require "draft-js"
 EntryBlock = require "./EntryBlock"
 
-# HANDLE_REGEX = /\@[\w]+/g
 HASHTAG_REGEX = /(?:^|\s)\#[\w\u0590-\u05ff]+/g
 
 hashtagStrategy = (contentBlock, callback)->
@@ -20,19 +20,30 @@ HashtagSpan = (props)->
 	E "span.hashtag", props,
 		props.children
 
+getSelectedBlockElement = ->
+	selection = window.getSelection()
+	# console.log selection
+	return null if selection.rangeCount is 0
+	# selection.getRangeAt(0).startContainer?.closest("[data-block='true']")
+	node = selection.getRangeAt(0).startContainer
+	loop
+		# return node if node.getAttribute?('data-block') is 'true'
+		return node if node.classList?.contains "block"
+		node = node.parentNode
+		break unless node
 
 # Custom overrides for "code" style.
-styleMap =
-	CODE:
-		backgroundColor: 'rgba(0, 0, 0, 0.05)'
-		fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace'
-		fontSize: 16
-		padding: 2
+# styleMap =
+# 	CODE:
+# 		backgroundColor: 'rgba(0, 0, 0, 0.05)'
+# 		fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace'
+# 		fontSize: 16
+# 		padding: 2
 
-getBlockStyle = (block)->
-	switch block.getType()
-		when 'blockquote' then 'RichEditor-blockquote'
-		else null
+# getBlockStyle = (block)->
+# 	switch block.getType()
+# 		when 'blockquote' then 'RichEditor-blockquote'
+# 		else null
 
 class StyleButton extends React.Component
 	constructor: ->
@@ -70,7 +81,7 @@ BlockStyleControls = (props) =>
 		.getCurrentContent()
 		.getBlockForKey(selection.getStartKey())
 		.getType()
-
+	
 	E ".RichEditor-controls",
 		BLOCK_TYPES.map (type) =>
 			E StyleButton,
@@ -157,3 +168,21 @@ module.exports =
 					handleKeyCommand: @handleKeyCommand
 					blockRendererFn: @renderBlock
 				}
+				E "button.block-controls-dropdown-button",
+					ref: "dropdownButton"
+					"⋮"
+		
+		componentDidUpdate: ->
+			# TODO: also on window resize
+			dropdownButtonEl = ReactDOM.findDOMNode(@refs.dropdownButton)
+			selectedBlockEl = getSelectedBlockElement()
+			# console.log selectedBlockEl
+			if selectedBlockEl
+				dropdownButtonEl.style.display = ""
+				dropdownButtonEl.style.position = "absolute"
+				dropdownButtonEl.style.top = "#{selectedBlockEl.offsetTop}px"
+				dropdownButtonEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth}px"
+			else
+				setTimeout =>
+					unless dropdownButtonEl is document.activeElement
+						dropdownButtonEl.style.display = "none"

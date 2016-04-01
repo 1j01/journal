@@ -98,8 +98,17 @@ hr {
 	}
 }
 
-.controls {
-	float: right;
+.block-controls-dropdown-button {
+	background: none;
+	border: 1px solid transparent;
+	border-radius: 50%;
+	outline: none;
+}
+.block-controls-dropdown-button:hover {
+	background: rgba(127, 127, 127, 0.1);
+}
+.block-controls-dropdown-button:active {
+	background: rgba(127, 127, 127, 0.3);
 }
 
 /*

@@ -1,5 +1,11 @@
 
 # TODO: always have a placeholder for new entries at the end
+# TODO: improve the initial experience
+	# maybe center the first block vertically (i.e. give it 50vh margin-top)
+	# maybe make the last entry have extra height so it's easier to click on
+	# make it clear where you can click to start typing
+	# and focus it automatically so you don't have to
+
 
 # TODO: drag and drop links
 # TODO: autolink urls
