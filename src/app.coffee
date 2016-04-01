@@ -6,6 +6,7 @@
 	# make it clear where you can click to start typing
 	# and focus it automatically so you don't have to
 
+# TODO: usable code blocks
 
 # TODO: drag and drop links
 # TODO: autolink urls

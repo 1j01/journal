@@ -5,6 +5,7 @@ ReactDOM = require "react-dom"
 {Editor, EditorState, RichUtils, CompositeDecorator} = require "draft-js"
 EntryBlock = require "./EntryBlock"
 CodeBlock = require "./CodeBlock"
+BlockquoteBlock = require "./BlockquoteBlock"
 
 HASHTAG_REGEX = /(?:^|\s)\#[\w\u0590-\u05ff]+/g
 
@@ -58,11 +59,12 @@ class StyleButton extends React.Component
 		if @props.active
 			className += ' RichEditor-activeButton'
 		
-		E "span",
-			{className, onMouseDown: @onToggle}
+		E ".menuitem",
+			{className, onClick: @onToggle}
 			@props.label
 
 BLOCK_TYPES = [
+	{label: 'Paragraph', style: 'unstyled'}
 	# {label: 'H1', style: 'header-one'}
 	# {label: 'H2', style: 'header-two'}
 	# {label: 'H3', style: 'header-three'}
@@ -115,6 +117,10 @@ class BlockControlsDropdown extends React.Component
 		@state = menuOpen: no
 	
 	render: ->
+		{editorState} = @props
+		onToggle = (style)=>
+			@props.onToggle(style)
+			@setState menuOpen: no
 		E ".block-controls-dropdown-container",
 			ref: "dropdownContainer"
 			E "button.block-controls-dropdown-button",
@@ -124,10 +130,11 @@ class BlockControlsDropdown extends React.Component
 			E ".menu.block-controls-dropdown-menu",
 				ref: "dropdownMenu"
 				style: display: (if @state.menuOpen then "block" else "none")
-				BlockStyleControls(@props)
+				BlockStyleControls {editorState, onToggle}
 				E ".menuitem",
 					onClick: =>
-						@TODO
+						alert "Not implemented. Delete it yourself."
+						@setState menuOpen: no
 					"Delete Block"
 	
 	componentDidMount: ->
@@ -161,14 +168,15 @@ module.exports =
 			
 			@renderBlock = (contentBlock)=>
 				switch contentBlock.getType()
-					when "image", "video"
+					when "media"
 						component: MediaBlock
 						editable: false
-						# props: foo: 'bar'
 					when "code-block"
 						component: CodeBlock
 						editable: false
-						# props: foo: 'bar'
+					when "blockquote"
+						component: BlockquoteBlock
+						editable: false
 					else
 						component: EntryBlock
 						editable: false
@@ -208,6 +216,9 @@ module.exports =
 				dropdownEl.style.position = "absolute"
 				dropdownEl.style.top = "#{selectedBlockEl.offsetTop}px"
 				dropdownEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth}px"
+				dark = selectedBlockEl.classList.contains("code-block")
+				dropdownEl.classList[if dark then "add" else "remove"]("over-dark-block")
+				# console.log selectedBlockEl.classList, dark, dropdownEl.classList
 			else
 				setTimeout =>
 					unless dropdownEl is document.activeElement.parentElement

@@ -21,6 +21,7 @@ blockquote {
 	padding: 0.5rem 10px;
 	padding-left: 2rem;
 	quotes: "\201C" "\201D" "\2018" "\2019";
+	/* @FIXME: only the first blockquote is getting double quotes */
 	position: relative;
 }
 blockquote:before {
@@ -119,12 +120,33 @@ hr {
 	border-radius: 50%;
 	outline: none;
 }
-.block-controls-dropdown-button:hover {
+.block-controls-dropdown-button:hover,
+.menuitem:hover {
 	background: rgba(127, 127, 127, 0.1);
 }
-.block-controls-dropdown-button:active {
+.block-controls-dropdown-button:active,
+.menuitem:active {
 	background: rgba(127, 127, 127, 0.3);
 }
+.over-dark-block .block-controls-dropdown-button {
+	color: white;
+}
+.block-controls-dropdown-menu {
+	background: white;
+	border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.menuitem {
+	padding: 0.2rem;
+	cursor: default;
+	padding-left: 1.4rem;
+	position: relative;
+}
+.menuitem.RichEditor-activeButton:before {
+	content: "✓";
+	position: absolute;
+	left: 0.2rem;
+}
+
 
 /*
 .block {
