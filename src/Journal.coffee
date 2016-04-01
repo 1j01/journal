@@ -4,6 +4,7 @@ React = require "react"
 ReactDOM = require "react-dom"
 {Editor, EditorState, RichUtils, CompositeDecorator} = require "draft-js"
 EntryBlock = require "./EntryBlock"
+CodeBlock = require "./CodeBlock"
 
 HASHTAG_REGEX = /(?:^|\s)\#[\w\u0590-\u05ff]+/g
 
@@ -51,27 +52,27 @@ class StyleButton extends React.Component
 		@onToggle = (e)=>
 			e.preventDefault()
 			@props.onToggle(@props.style)
-
+	
 	render: ->
 		className = 'RichEditor-styleButton'
 		if @props.active
 			className += ' RichEditor-activeButton'
-
+		
 		E "span",
 			{className, onMouseDown: @onToggle}
 			@props.label
 
 BLOCK_TYPES = [
-	{label: 'H1', style: 'header-one'},
-	{label: 'H2', style: 'header-two'},
-	{label: 'H3', style: 'header-three'},
-	{label: 'H4', style: 'header-four'},
-	{label: 'H5', style: 'header-five'},
-	{label: 'H6', style: 'header-six'},
-	{label: 'Blockquote', style: 'blockquote'},
-	{label: 'UL', style: 'unordered-list-item'},
-	{label: 'OL', style: 'ordered-list-item'},
-	{label: 'Code Block', style: 'code-block'},
+	# {label: 'H1', style: 'header-one'}
+	# {label: 'H2', style: 'header-two'}
+	# {label: 'H3', style: 'header-three'}
+	# {label: 'H4', style: 'header-four'}
+	# {label: 'H5', style: 'header-five'}
+	# {label: 'H6', style: 'header-six'}
+	{label: 'Blockquote', style: 'blockquote'}
+	# {label: 'UL', style: 'unordered-list-item'}
+	# {label: 'OL', style: 'ordered-list-item'}
+	{label: 'Code Block', style: 'code-block'}
 ]
 
 BlockStyleControls = (props) =>
@@ -92,10 +93,10 @@ BlockStyleControls = (props) =>
 				style: type.style
 
 INLINE_STYLES = [
-	{label: 'Bold', style: 'BOLD'},
-	{label: 'Italic', style: 'ITALIC'},
-	{label: 'Underline', style: 'UNDERLINE'},
-	{label: 'Monospace', style: 'CODE'},
+	{label: 'Bold', style: 'BOLD'}
+	{label: 'Italic', style: 'ITALIC'}
+	{label: 'Underline', style: 'UNDERLINE'}
+	{label: 'Monospace', style: 'CODE'}
 ]
 
 InlineStyleControls = (props) =>
@@ -108,6 +109,34 @@ InlineStyleControls = (props) =>
 				label: type.label
 				onToggle: props.onToggle
 				style: type.style
+
+class BlockControlsDropdown extends React.Component
+	constructor: ->
+		@state = menuOpen: no
+	
+	render: ->
+		E ".block-controls-dropdown-container",
+			ref: "dropdownContainer"
+			E "button.block-controls-dropdown-button",
+				onClick: =>
+					@setState menuOpen: not @state.menuOpen
+				"⋮"
+			E ".menu.block-controls-dropdown-menu",
+				ref: "dropdownMenu"
+				style: display: (if @state.menuOpen then "block" else "none")
+				BlockStyleControls(@props)
+				E ".menuitem",
+					onClick: =>
+						@TODO
+					"Delete Block"
+	
+	componentDidMount: ->
+		@onmousedown = addEventListener "mousedown", (e)=>
+			return if e.target.closest(".block-controls-dropdown-container")
+			@setState menuOpen: no
+	
+	componentWillUnmount: ->
+		removeEventListener "mousedown", @onmousedown
 
 module.exports =
 	class Journal extends React.Component
@@ -136,7 +165,7 @@ module.exports =
 						component: MediaBlock
 						editable: false
 						# props: foo: 'bar'
-					when "code"
+					when "code-block"
 						component: CodeBlock
 						editable: false
 						# props: foo: 'bar'
@@ -168,21 +197,18 @@ module.exports =
 					handleKeyCommand: @handleKeyCommand
 					blockRendererFn: @renderBlock
 				}
-				E "button.block-controls-dropdown-button",
-					ref: "dropdownButton"
-					"⋮"
+				E BlockControlsDropdown, {editorState, onToggle: @toggleBlockType, ref: "dropdown"}
 		
 		componentDidUpdate: ->
 			# TODO: also on window resize
-			dropdownButtonEl = ReactDOM.findDOMNode(@refs.dropdownButton)
+			dropdownEl = ReactDOM.findDOMNode(@refs.dropdown)
 			selectedBlockEl = getSelectedBlockElement()
-			# console.log selectedBlockEl
 			if selectedBlockEl
-				dropdownButtonEl.style.display = ""
-				dropdownButtonEl.style.position = "absolute"
-				dropdownButtonEl.style.top = "#{selectedBlockEl.offsetTop}px"
-				dropdownButtonEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth}px"
+				dropdownEl.style.display = ""
+				dropdownEl.style.position = "absolute"
+				dropdownEl.style.top = "#{selectedBlockEl.offsetTop}px"
+				dropdownEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth}px"
 			else
 				setTimeout =>
-					unless dropdownButtonEl is document.activeElement
-						dropdownButtonEl.style.display = "none"
+					unless dropdownEl is document.activeElement.parentElement
+						dropdownEl.style.display = "none"
