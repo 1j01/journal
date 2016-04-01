@@ -1,8 +1,25 @@
 
 E = require "react-script"
 React = require "react"
-{Editor, EditorState, RichUtils} = require "draft-js"
+{Editor, EditorState, RichUtils, CompositeDecorator} = require "draft-js"
 EntryBlock = require "./EntryBlock"
+
+# HANDLE_REGEX = /\@[\w]+/g
+HASHTAG_REGEX = /(?:^|\s)\#[\w\u0590-\u05ff]+/g
+
+hashtagStrategy = (contentBlock, callback)->
+	findWithRegex(HASHTAG_REGEX, contentBlock, callback)
+
+findWithRegex = (regex, contentBlock, callback)->
+	text = contentBlock.getText()
+	while (matchArr = regex.exec(text)) isnt null
+		start = matchArr.index
+		callback(start, start + matchArr[0].length)
+
+HashtagSpan = (props)->
+	E "span.hashtag", props,
+		props.children
+
 
 # Custom overrides for "code" style.
 styleMap =
@@ -85,9 +102,23 @@ module.exports =
 	class Journal extends React.Component
 		constructor: ->
 			super
-			@state = editorState: EditorState.createEmpty()
+			
+			compositeDecorator = new CompositeDecorator [
+				# {
+				# 	strategy: handleStrategy,
+				# 	component: HandleSpan,
+				# }
+				{
+					strategy: hashtagStrategy
+					component: HashtagSpan
+				}
+			]
+			
+			@state = editorState: EditorState.createEmpty(compositeDecorator)
+			
 			@onChange = (editorState) =>
 				@setState {editorState}
+			
 			@renderBlock = (contentBlock)=>
 				switch contentBlock.getType()
 					when "image", "video"

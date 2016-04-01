@@ -40,7 +40,8 @@ blockquote:before {
 	}
 }
 
-a[href] {
+a[href],
+.hashtag {
 	color: #2196F3;
 }
 
