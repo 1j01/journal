@@ -1,24 +1,24 @@
 
 # TODO: always have a placeholder for new entries at the end
 
-# TODO: use arrow keys to travel between blocks
-
-# TODO: formatting
+# Done until loading is implemented: use arrow keys to travel between blocks
 
 # TODO: autolink urls
 	# can probably use regexp from https://github.com/bryanwoods/autolink-js/blob/master/autolink.coffee
 # TODO: allow clicking links
 
-# TODO: allow drag and drop
+# Done: allow drag and drop
+
+# TODO: toggle block types and delete blocks from three dots menu
 
 # onpaste:
-	# TODO: remove font-size, font-family and probably line-height from styles of at least <p> elements
+	# Done: remove font-size, font-family and probably line-height from styles of at least <p> elements
 	# TODO: detect code, automatically make code blocks
 
-# TODO: undo/redo
-# TODO: multi-block selection
+# Done until loading is implemented: undo/redo
+# Done at least until loading is implemented: multi-block selection
 
-# TODO: context menus with https://github.com/mixmaxhq/electron-spell-check-provider
+# Done: context menus with https://github.com/mixmaxhq/electron-spell-check-provider
 
 require "coffee-script/register"
 
