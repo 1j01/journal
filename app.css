@@ -84,12 +84,13 @@ hr {
 	position: relative;
 }
 
-.timestamp {
+.block::before {
+	content: attr(data-timestamp);
 	font-size: 0.6rem;
 	color: gray;
 }
 @media (min-width: 70rem) {
-	.timestamp {
+	.block::before {
 		position: absolute;
 		right: 100%;
 		margin-right: 0.5rem;

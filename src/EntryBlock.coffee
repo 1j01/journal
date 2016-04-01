@@ -8,6 +8,6 @@ module.exports =
 		# constructor: ->
 		render: ->
 			E "article.block.entry",
-				E ".timestamp", contenteditable: "false", "<timestamp here>"
+				data: timestamp: "<timestamp>"
 				E EditorBlock, @props # ??
-				E ".controls", contenteditable: "false", "⋮"
+				# E ".controls", contenteditable: "false", "⋮"
