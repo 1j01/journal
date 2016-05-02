@@ -67,30 +67,50 @@ hr {
 	border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
 
+.entry {
+	cursor: text;
+	min-height: 1em;
+	outline: 0;
+	position: relative;
+}
+
 .block {
 	margin: 0.5rem 0;
 }
 
-.block > code {
+.code-block {
+	min-height: 1rem;
+    margin: 0;
+}
+.code-block > code {
 	display: block;
 	white-space: pre-wrap;
 	tab-size: 4;
 	background: black;
 	color: white;
 	margin: 0;
-	padding: 1rem 1rem;
+	min-height: 1rem;
+	padding: 0 1rem;
 	margin: 0 -1rem;
+}
+.code-block ~ .code-block::before {
+	display: none;
+}
+.code-block::before {
+	padding-top: 0.5rem;
+}
+.code-block ~ .code-block {
+    padding: 0;
+}
+pre > .code-block:first-child > code{
+	padding-top: 0.5rem;
+}
+pre > .code-block:last-child > code {
+	padding-bottom: 0.5rem;
 }
 
 .block > hr {
 	margin: 0 -1rem;
-}
-
-.entry {
-	cursor: text;
-	min-height: 1em;
-	outline: 0;
-	position: relative;
 }
 
 /* timestamp */
@@ -107,11 +127,10 @@ hr {
 		right: 100%;
 		margin-right: 0.5rem;
 	}
-	.block > code {
+	.code-block > code {
 		margin-left: -5rem;
 		padding-left: 5rem;
 	}
-	/* TODO: timestamp should probably line up with the first line of text of a code block */
 }
 
 .block-controls-dropdown-button {
