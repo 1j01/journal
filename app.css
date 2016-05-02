@@ -21,7 +21,6 @@ blockquote {
 	padding: 0.5rem 10px;
 	padding-left: 2rem;
 	quotes: "\201C" "\201D" "\2018" "\2019";
-	/* @FIXME: only the first blockquote is getting double quotes */
 	position: relative;
 }
 blockquote:before {
@@ -29,7 +28,7 @@ blockquote:before {
 	left: 0;
 	top: 2rem;
 	color: #ccc;
-	content: open-quote;
+	content: "\201C";
 	font-size: 4rem;
 	line-height: 0.4rem;
 	margin-right: 1rem;
@@ -55,9 +54,6 @@ samp {
 	padding: .0625em .25em 0; /* breathing room for inline code that has a different background or an outline */
 }
 pre.public-DraftStyleDefault-pre {
-	/*font-size: inherit;
-	line-height: inherit;
-	font-family: inherit;*/
 	font: inherit;
 	margin: 0;
 }
