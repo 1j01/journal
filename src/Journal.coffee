@@ -8,10 +8,20 @@ CodeBlock = require "./CodeBlock"
 BlockquoteBlock = require "./BlockquoteBlock"
 ProseBlock = require "./ProseBlock"
 
-HASHTAG_REGEX = /(?:^|\s)\#[\w\u0590-\u05ff]+/g
+HASHTAG_REGEX = /\#[\w\u0590-\u05ff]+/g
+# LINK_REGEX = /(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$_iuS/g
+# LINK_REGEX = new RegExp '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$', 'i'
+LINK_REGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/g
 
 hashtagStrategy = (contentBlock, callback)->
+	# return unless contentBlock.type in ["unstyled", "prose-block", "blockquote"]
+	return if contentBlock.type in ["code-block"]
 	findWithRegex(HASHTAG_REGEX, contentBlock, callback)
+
+linkStrategy = (contentBlock, callback)->
+	# return unless contentBlock.type in ["unstyled", "prose-block", "blockquote"]
+	return if contentBlock.type in ["code-block"]
+	findWithRegex(LINK_REGEX, contentBlock, callback)
 
 findWithRegex = (regex, contentBlock, callback)->
 	text = contentBlock.getText()
@@ -19,8 +29,12 @@ findWithRegex = (regex, contentBlock, callback)->
 		start = matchArr.index
 		callback(start, start + matchArr[0].length)
 
-HashtagSpan = (props)->
-	E "span.hashtag", props,
+Hashtag = (props)->
+	E "a.hashtag", href: "##{props.decoratedText.replace(/^[\s#]+/, "")}",
+		props.children
+
+Link = (props)->
+	E "a", href: props.decoratedText,
 		props.children
 
 getSelectedBlockElement = ->
@@ -34,19 +48,6 @@ getSelectedBlockElement = ->
 		return node if node.classList?.contains "block"
 		node = node.parentNode
 		break unless node
-
-# Custom overrides for "code" style.
-# styleMap =
-# 	CODE:
-# 		backgroundColor: 'rgba(0, 0, 0, 0.05)'
-# 		fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace'
-# 		fontSize: 16
-# 		padding: 2
-
-# getBlockStyle = (block)->
-# 	switch block.getType()
-# 		when 'blockquote' then 'RichEditor-blockquote'
-# 		else null
 
 class StyleButton extends React.Component
 	constructor: ->
@@ -154,8 +155,12 @@ module.exports =
 			
 			compositeDecorator = new CompositeDecorator [
 				{
+					strategy: linkStrategy
+					component: Link
+				}
+				{
 					strategy: hashtagStrategy
-					component: HashtagSpan
+					component: Hashtag
 				}
 			]
 			
