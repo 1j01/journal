@@ -14,14 +14,36 @@ p+*, *+p, *+h1, *+h2, *+h3, *+h4, *+h5, *+ul, *+ol {
 	margin-top: 1rem;
 }
 
-blockquote {
+blockquote,
+.prose {
 	font-style: italic;
 	color: #555;
-	margin: 0 -1rem;
 	padding: 0.5rem 10px;
-	padding-left: 2rem;
-	quotes: "\201C" "\201D" "\2018" "\2019";
+}
+.prose {
+	/*background: rgba(0, 150, 136, 0.15);*/
+	/*border: 1px solid rgba(0, 0, 0, 0.1);*/
+    /*border-radius: 5px;*/
+}
+/*
+"-" is not an actual selector; if it was and it mirrored "+", this would work:
+
+.prose-block - .prose-block .prose {
+	border-bottom: transparent;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.prose-block + .prose-block .prose {
+	border-top: transparent;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+*/
+blockquote {
 	position: relative;
+	quotes: "\201C" "\201D" "\2018" "\2019";
+	margin: 0 -1rem;
+	padding-left: 2rem;
 }
 blockquote:before {
 	position: absolute;
@@ -86,17 +108,23 @@ hr {
 .code-block ~ .code-block::before {
 	display: none;
 }
-.code-block::before {
+.code-block::before,
+/*.prose-block:not(.prose-block + .prose-block)::before { not allowed by CSS */
+.block:not(.prose-block) + .prose-block::before,
+.prose-block:first-of-type::before {
 	padding-top: 0.5rem;
 }
-.code-block ~ .code-block {
-    padding: 0;
-}
-pre > .code-block:first-child > code{
+pre > .code-block:first-child > code {
 	padding-top: 0.5rem;
 }
 pre > .code-block:last-child > code {
 	padding-bottom: 0.5rem;
+}
+.prose-block + .prose-block .prose {
+    padding-top: 0;
+}
+.prose-block + .prose-block {
+    margin-top: -0.5rem;
 }
 
 .block > hr {

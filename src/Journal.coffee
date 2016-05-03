@@ -6,6 +6,7 @@ ReactDOM = require "react-dom"
 EntryBlock = require "./EntryBlock"
 CodeBlock = require "./CodeBlock"
 BlockquoteBlock = require "./BlockquoteBlock"
+ProseBlock = require "./ProseBlock"
 
 HASHTAG_REGEX = /(?:^|\s)\#[\w\u0590-\u05ff]+/g
 
@@ -72,6 +73,7 @@ BLOCK_TYPES = [
 	# {label: 'H5', style: 'header-five'}
 	# {label: 'H6', style: 'header-six'}
 	{label: 'Blockquote', style: 'blockquote'}
+	{label: 'Prose', style: 'prose-block'}
 	# {label: 'UL', style: 'unordered-list-item'}
 	# {label: 'OL', style: 'ordered-list-item'}
 	{label: 'Code Block', style: 'code-block'}
@@ -176,6 +178,9 @@ module.exports =
 						editable: false
 					when "blockquote"
 						component: BlockquoteBlock
+						editable: false
+					when "prose-block"
+						component: ProseBlock
 						editable: false
 					else
 						component: EntryBlock
