@@ -63,15 +63,9 @@ hr {
 	border-top: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.entry {
-	cursor: text;
-	min-height: 1em;
-	outline: 0;
-	position: relative;
-}
-
 .block {
 	margin: 0.5rem 0;
+	position: relative;
 }
 
 .code-block {
