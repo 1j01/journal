@@ -151,6 +151,12 @@ pre > .code-block:last-child > code {
 	}
 }
 
+.block-controls-dropdown-container {
+	pointer-events: none;
+}
+.block-controls-dropdown-container > * {
+	pointer-events: all;
+}
 .block-controls-dropdown-button {
 	background: none;
 	border: 1px solid transparent;

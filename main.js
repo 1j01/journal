@@ -6,7 +6,6 @@ const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 // Module for opening URLs
-// const open = require('open');
 const shell = electron.shell;
 
 // Keep a global reference of the window object, if you don't, the window will

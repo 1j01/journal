@@ -164,7 +164,9 @@ module.exports =
 				}
 			]
 			
-			@state = editorState: EditorState.createEmpty(compositeDecorator)
+			@state =
+				editorState: EditorState.createEmpty(compositeDecorator)
+				menuForBlockEl: null
 			
 			@onChange = (editorState)=>
 				@props.onChange(editorState)
@@ -200,6 +202,9 @@ module.exports =
 		
 		toggleBlockType: (blockType)=>
 			@onChange RichUtils.toggleBlockType(@state.editorState, blockType)
+			# without the timeout, blocktype changing is canceled
+			setTimeout =>
+				@refs.editor.focus()
 		
 		toggleInlineStyle: (inlineStyle)=>
 			@onChange RichUtils.toggleInlineStyle(@state.editorState, inlineStyle)
@@ -240,25 +245,44 @@ module.exports =
 			@updateDropdownMenu()
 		
 		updateDropdownMenu: ->
+			{menuForBlockEl} = @state
 			dropdownEl = ReactDOM.findDOMNode(@refs.dropdown)
 			selectedBlockEl = getSelectedBlockElement()
-			# FIXME: reposition when resizing with menu open
+			
 			if selectedBlockEl
 				dropdownEl.style.display = ""
 				dropdownEl.style.position = "absolute"
+				# setTimeout =>
+				unless menuForBlockEl is selectedBlockEl
+					@setState menuForBlockEl: selectedBlockEl
+			else
+				# setTimeout =>
+				unless dropdownEl is document.activeElement.parentElement
+					unless menuForBlockEl
+						dropdownEl.style.display = "none"
+					# @setState menuForBlockEl: null
+				# , 300
+			
+			# # menuForBlockEl = selectedBlockEl unless menuForBlockEl?.parentElement
+			# # console.log "menuForBlockEl", menuForBlockEl, "parentElement", menuForBlockEl?.parentElement
+			# 
+			# console.log "document.body.contains(menuForBlockEl)", document.body.contains(menuForBlockEl)
+			# # setTimeout =>
+			# # 	console.log "document.body.contains(menuForBlockEl) after setTimeout", document.body.contains(menuForBlockEl)
+			# console.log "selectedBlockEl", selectedBlockEl
+			# # unless document.body.contains(menuForBlockEl)
+			# # 	menuForBlockEl = selectedBlockEl
+			
+			# if selectedBlockEl or (dropdownEl? and dropdownEl.style.display isnt "none")
+			if menuForBlockEl
 				additionalOffsetTop =
-					if selectedBlockEl.classList.contains("code-block")
-						selectedBlockEl.querySelector("code").offsetTop
-					else if selectedBlockEl.classList.contains("prose-block")
-						selectedBlockEl.querySelector(".prose").offsetTop
+					if menuForBlockEl.classList.contains("code-block")
+						menuForBlockEl.querySelector("code").offsetTop
+					else if menuForBlockEl.classList.contains("prose-block")
+						menuForBlockEl.querySelector(".prose").offsetTop
 					else
 						0
-				dropdownEl.style.top = "#{selectedBlockEl.offsetTop + additionalOffsetTop}px"
-				dropdownEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth - 4}px"
-				dark = selectedBlockEl.classList.contains("code-block")
+				dropdownEl.style.top = "#{menuForBlockEl.offsetTop + additionalOffsetTop}px"
+				dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4}px"
+				dark = menuForBlockEl.classList.contains("code-block")
 				dropdownEl.classList[if dark then "add" else "remove"]("over-dark-block")
-				# console.log selectedBlockEl.classList, dark, dropdownEl.classList
-			else
-				setTimeout =>
-					unless dropdownEl is document.activeElement.parentElement
-						dropdownEl.style.display = "none"
