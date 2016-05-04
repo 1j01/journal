@@ -6,13 +6,8 @@
 	# make it clear where you can click to start typing
 	# and focus it automatically so you don't have to
 
-# TODO: usable code blocks
-
 # TODO: drag and drop links
-# TODO: autolink urls
-	# can probably use regexp from https://github.com/bryanwoods/autolink-js/blob/master/autolink.coffee
-# TODO: allow clicking links
-# TODO: allow clicking hashtags
+# TODO: fix link/hashtag ux
 
 # TODO: paste or drag and drop images
 # TODO: detect code when pasting, automatically make code blocks

@@ -118,6 +118,7 @@ class BlockControlsDropdown extends React.Component
 		@state = menuOpen: no
 	
 	render: ->
+		# TODO: go to the left when space isn't fully available to the right
 		{editorState} = @props
 		onToggle = (style)=>
 			@props.onToggle(style)
@@ -132,11 +133,12 @@ class BlockControlsDropdown extends React.Component
 				ref: "dropdownMenu"
 				style: display: (if @state.menuOpen then "block" else "none")
 				BlockStyleControls {editorState, onToggle}
-				E ".menuitem",
-					onClick: =>
-						alert "Not implemented. Delete it yourself."
-						@setState menuOpen: no
-					"Delete Block"
+				# E "hr"
+				# E ".menuitem",
+				# 	onClick: =>
+				# 		alert "Not implemented. Delete it yourself."
+				# 		@setState menuOpen: no
+				# 	"Delete Block"
 	
 	componentDidMount: ->
 		@onmousedown = addEventListener "mousedown", (e)=>
@@ -218,27 +220,41 @@ module.exports =
 				E BlockControlsDropdown, {editorState, onToggle: @toggleBlockType, ref: "dropdown"}
 		
 		componentDidMount: ->
-			React.findDOMNode(@refs.editor).addEventListener "mousedown", @mousedown = (e)=>
+			ReactDOM.findDOMNode(@refs.editor).addEventListener "mousedown", @onmousedown = (e)=>
 				if e.target.closest("a")
 					@setState readOnly: yes
 			
-			addEventListener "mouseup", @mouseup = =>
+			addEventListener "mouseup", @onmouseup = =>
 				setTimeout =>
 					@setState readOnly: no
+			
+			addEventListener "resize", @onresize = =>
+				@updateDropdownMenu()
 		
 		componentWillUnmount: ->
-			React.findDOMNode(@refs.editor).removeEventListener "mousedown", @mousedown
-			removeEventListener "mouseup", @mouseup
+			ReactDOM.findDOMNode(@refs.editor).removeEventListener "mousedown", @onmousedown
+			removeEventListener "mouseup", @onmouseup
+			removeEventListener "resize", @onresize
 		
 		componentDidUpdate: ->
-			# TODO: also on window resize
+			@updateDropdownMenu()
+		
+		updateDropdownMenu: ->
 			dropdownEl = ReactDOM.findDOMNode(@refs.dropdown)
 			selectedBlockEl = getSelectedBlockElement()
+			# FIXME: reposition when resizing with menu open
 			if selectedBlockEl
 				dropdownEl.style.display = ""
 				dropdownEl.style.position = "absolute"
-				dropdownEl.style.top = "#{selectedBlockEl.offsetTop}px"
-				dropdownEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth}px"
+				additionalOffsetTop =
+					if selectedBlockEl.classList.contains("code-block")
+						selectedBlockEl.querySelector("code").offsetTop
+					else if selectedBlockEl.classList.contains("prose-block")
+						selectedBlockEl.querySelector(".prose").offsetTop
+					else
+						0
+				dropdownEl.style.top = "#{selectedBlockEl.offsetTop + additionalOffsetTop}px"
+				dropdownEl.style.left = "#{selectedBlockEl.offsetLeft + selectedBlockEl.offsetWidth - 4}px"
 				dark = selectedBlockEl.classList.contains("code-block")
 				dropdownEl.classList[if dark then "add" else "remove"]("over-dark-block")
 				# console.log selectedBlockEl.classList, dark, dropdownEl.classList
