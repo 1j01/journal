@@ -9,8 +9,6 @@ BlockquoteBlock = require "./BlockquoteBlock"
 ProseBlock = require "./ProseBlock"
 
 HASHTAG_REGEX = /\#[\w\u0590-\u05ff]+/g
-# LINK_REGEX = /(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$_iuS/g
-# LINK_REGEX = new RegExp '^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$', 'i'
 LINK_REGEX = /(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/g
 
 hashtagStrategy = (contentBlock, callback)->
@@ -34,17 +32,17 @@ Hashtag = (props)->
 		props.children
 
 Link = (props)->
-	E "a", href: props.decoratedText,
+	url = props.decoratedText
+	unless url.match /^http:/
+		url = "http://#{url}"
+	E "a", href: url, target: "_blank",
 		props.children
 
 getSelectedBlockElement = ->
 	selection = window.getSelection()
-	# console.log selection
 	return null if selection.rangeCount is 0
-	# selection.getRangeAt(0).startContainer?.closest("[data-block='true']")
 	node = selection.getRangeAt(0).startContainer
 	loop
-		# return node if node.getAttribute?('data-block') is 'true'
 		return node if node.classList?.contains "block"
 		node = node.parentNode
 		break unless node
@@ -205,17 +203,32 @@ module.exports =
 			@onChange RichUtils.toggleInlineStyle(@state.editorState, inlineStyle)
 		
 		render: ->
-			{editorState} = @state
+			{editorState, readOnly} = @state
 			{onChange} = @
 			E ".journal",
 				E Editor, {
 					editorState
+					readOnly
 					onChange
 					spellCheck: on
 					handleKeyCommand: @handleKeyCommand
 					blockRendererFn: @renderBlock
+					ref: "editor"
 				}
 				E BlockControlsDropdown, {editorState, onToggle: @toggleBlockType, ref: "dropdown"}
+		
+		componentDidMount: ->
+			React.findDOMNode(@refs.editor).addEventListener "mousedown", @mousedown = (e)=>
+				if e.target.closest("a")
+					@setState readOnly: yes
+			
+			addEventListener "mouseup", @mouseup = =>
+				setTimeout =>
+					@setState readOnly: no
+		
+		componentWillUnmount: ->
+			React.findDOMNode(@refs.editor).removeEventListener "mousedown", @mousedown
+			removeEventListener "mouseup", @mouseup
 		
 		componentDidUpdate: ->
 			# TODO: also on window resize

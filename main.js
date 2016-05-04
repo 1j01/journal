@@ -5,6 +5,9 @@ const electron = require('electron');
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+// Module for opening URLs
+// const open = require('open');
+const shell = electron.shell;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -24,6 +27,13 @@ function createWindow () {
 
 	// Get rid of the ugly menu on Windows and Linux.
 	mainWindow.setMenu(null);
+
+	// Handle external links
+	mainWindow.webContents.on('new-window', function(event, url){
+		event.preventDefault();
+		// open(url);
+		shell.openExternal(url);
+	});
 
 	// Open the DevTools.
 	// mainWindow.webContents.openDevTools();
