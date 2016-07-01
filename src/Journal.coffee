@@ -118,7 +118,6 @@ class BlockControlsDropdown extends React.Component
 		@state = menuOpen: no
 	
 	render: ->
-		# TODO: go to the left when space isn't fully available to the right
 		{editorState} = @props
 		onToggle = (style)=>
 			@props.onToggle(style)
@@ -126,12 +125,15 @@ class BlockControlsDropdown extends React.Component
 		E ".block-controls-dropdown-container",
 			ref: "dropdownContainer"
 			E "button.block-controls-dropdown-button",
+				ref: "dropdownButton"
 				onClick: =>
 					@setState menuOpen: not @state.menuOpen
 				"⋮"
 			E ".menu.block-controls-dropdown-menu",
 				ref: "dropdownMenu"
-				style: display: (if @state.menuOpen then "block" else "none")
+				style:
+					display: (if @state.menuOpen then "block" else "none")
+					position: "absolute"
 				BlockStyleControls {editorState, onToggle}
 				# E "hr"
 				# E ".menuitem",
@@ -141,12 +143,29 @@ class BlockControlsDropdown extends React.Component
 				# 	"Delete Block"
 	
 	componentDidMount: ->
-		@onmousedown = addEventListener "mousedown", (e)=>
+		addEventListener "mousedown", @onmousedown = (e)=>
 			return if e.target.closest(".block-controls-dropdown-container")
 			@setState menuOpen: no
+		
+		addEventListener "resize", @onresize = =>
+			@updateDropdownMenu()
 	
 	componentWillUnmount: ->
 		removeEventListener "mousedown", @onmousedown
+		removeEventListener "resize", @onresize
+	
+	componentDidUpdate: ->
+		@updateDropdownMenu()
+	
+	updateDropdownMenu: ->
+		dropdownMenuEl = ReactDOM.findDOMNode(@refs.dropdownMenu)
+		dropdownButtonEl = ReactDOM.findDOMNode(@refs.dropdownButton)
+		# rect = dropdownMenuEl.getBoundingClientRect()
+		rect = dropdownButtonEl.getBoundingClientRect()
+		if rect.left + 15 + dropdownMenuEl.offsetWidth > window.innerWidth
+			dropdownMenuEl.style.right = "0px"
+		else
+			dropdownMenuEl.style.right = ""
 
 module.exports =
 	class Journal extends React.Component
@@ -252,28 +271,13 @@ module.exports =
 			if selectedBlockEl
 				dropdownEl.style.display = ""
 				dropdownEl.style.position = "absolute"
-				# setTimeout =>
 				unless menuForBlockEl is selectedBlockEl
 					@setState menuForBlockEl: selectedBlockEl
 			else
-				# setTimeout =>
 				unless dropdownEl is document.activeElement.parentElement
 					unless menuForBlockEl
 						dropdownEl.style.display = "none"
-					# @setState menuForBlockEl: null
-				# , 300
 			
-			# # menuForBlockEl = selectedBlockEl unless menuForBlockEl?.parentElement
-			# # console.log "menuForBlockEl", menuForBlockEl, "parentElement", menuForBlockEl?.parentElement
-			# 
-			# console.log "document.body.contains(menuForBlockEl)", document.body.contains(menuForBlockEl)
-			# # setTimeout =>
-			# # 	console.log "document.body.contains(menuForBlockEl) after setTimeout", document.body.contains(menuForBlockEl)
-			# console.log "selectedBlockEl", selectedBlockEl
-			# # unless document.body.contains(menuForBlockEl)
-			# # 	menuForBlockEl = selectedBlockEl
-			
-			# if selectedBlockEl or (dropdownEl? and dropdownEl.style.display isnt "none")
 			if menuForBlockEl
 				additionalOffsetTop =
 					if menuForBlockEl.classList.contains("code-block")
@@ -283,6 +287,11 @@ module.exports =
 					else
 						0
 				dropdownEl.style.top = "#{menuForBlockEl.offsetTop + additionalOffsetTop}px"
+				# console.log menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth, window.innerWidth
+				# if menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth + dropdownEl.offsetWidth > window.innerWidth
+				# 	dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4 - dropdownEl.offsetWidth}px"
+				# else
+				# 	dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4}px"
 				dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4}px"
 				dark = menuForBlockEl.classList.contains("code-block")
 				dropdownEl.classList[if dark then "add" else "remove"]("over-dark-block")
