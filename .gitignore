@@ -1,5 +1,6 @@
 
 journal.json
+*.bak*
 
 node_modules/
 temp/

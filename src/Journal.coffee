@@ -2,7 +2,15 @@
 E = require "react-script"
 React = require "react"
 ReactDOM = require "react-dom"
-{Editor, EditorState, RichUtils, CompositeDecorator} = require "draft-js"
+{
+	Editor
+	EditorState
+	RichUtils
+	CompositeDecorator
+	DefaultDraftBlockRenderMap
+} = require "draft-js"
+{Map} = require "immutable"
+
 EntryBlock = require "./EntryBlock"
 CodeBlock = require "./CodeBlock"
 BlockquoteBlock = require "./BlockquoteBlock"
@@ -160,7 +168,6 @@ class BlockControlsDropdown extends React.Component
 	updateDropdownMenu: ->
 		dropdownMenuEl = ReactDOM.findDOMNode(@refs.dropdownMenu)
 		dropdownButtonEl = ReactDOM.findDOMNode(@refs.dropdownButton)
-		# rect = dropdownMenuEl.getBoundingClientRect()
 		rect = dropdownButtonEl.getBoundingClientRect()
 		if rect.left + 15 + dropdownMenuEl.offsetWidth > window.innerWidth
 			dropdownMenuEl.style.right = "0px"
@@ -183,11 +190,48 @@ module.exports =
 				}
 			]
 			
+			customBlockRenderMap = Map
+				# "paragraph":
+				# 	element: 'div'
+				# "unstyled":
+				# 	element: 'div'
+				"blockquote":
+					element: 'div' # for now
+				"prose-block":
+					element: 'div' # for now
+				"code-block":
+					element: 'div' # for now
+			
+			# customBlockRenderMap = new Map
+			# customBlockRenderMap.set "paragraph",
+			# 	element: 'p'
+			# customBlockRenderMap.set "unstyled",
+			# 	element: 'p'
+			# customBlockRenderMap.set "blockquote",
+			# 	element: 'blockquote'
+			# customBlockRenderMap.set "prose-block",
+			# 	element: 'div'
+			# customBlockRenderMap.set "code-block",
+			# 	element: 'div'
+			
 			@state =
+				blockRenderMap: DefaultDraftBlockRenderMap.merge(customBlockRenderMap)
 				editorState: EditorState.createEmpty(compositeDecorator)
 				menuForBlockEl: null
 			
 			@onChange = (editorState)=>
+				# TODO: actually use handleBeforeInput for adding the block metadata
+				# https://github.com/facebook/draft-js/issues/506#issuecomment-230197025
+				# {editorState} = @state
+				selection = editorState.getSelection()
+				# blockType = editorState
+				# 	.getCurrentContent()
+				# 	.getBlockForKey(selection.getStartKey())
+				# 	.getType()
+				
+				# content = editorState.getCurrentContent()
+				# editorState = Modifier.mergeBlockData(content, selection, new Map(m: Date.now()))
+				
 				@props.onChange(editorState)
 				@setState {editorState}
 			
@@ -196,21 +240,21 @@ module.exports =
 			
 			@renderBlock = (contentBlock)=>
 				switch contentBlock.getType()
-					when "media"
+					when "media", "atomic"
 						component: MediaBlock
-						editable: false
+						# editable: false
 					when "code-block"
 						component: CodeBlock
-						editable: false
+						# editable: false
 					when "blockquote"
 						component: BlockquoteBlock
-						editable: false
+						# editable: false
 					when "prose-block"
 						component: ProseBlock
-						editable: false
+						# editable: false
 					else
 						component: EntryBlock
-						editable: false
+						# editable: false
 		
 		handleKeyCommand: (command)=>
 			newState = RichUtils.handleKeyCommand(@state.editorState, command)
@@ -229,16 +273,17 @@ module.exports =
 			@onChange RichUtils.toggleInlineStyle(@state.editorState, inlineStyle)
 		
 		render: ->
-			{editorState, readOnly} = @state
+			{editorState, readOnly, blockRenderMap} = @state
 			{onChange} = @
 			E ".journal",
 				E Editor, {
 					editorState
-					readOnly
+					# readOnly
 					onChange
 					spellCheck: on
 					handleKeyCommand: @handleKeyCommand
 					blockRendererFn: @renderBlock
+					blockRenderMap
 					ref: "editor"
 				}
 				E BlockControlsDropdown, {editorState, onToggle: @toggleBlockType, ref: "dropdown"}
@@ -287,11 +332,6 @@ module.exports =
 					else
 						0
 				dropdownEl.style.top = "#{menuForBlockEl.offsetTop + additionalOffsetTop}px"
-				# console.log menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth, window.innerWidth
-				# if menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth + dropdownEl.offsetWidth > window.innerWidth
-				# 	dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4 - dropdownEl.offsetWidth}px"
-				# else
-				# 	dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4}px"
 				dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4}px"
 				dark = menuForBlockEl.classList.contains("code-block")
 				dropdownEl.classList[if dark then "add" else "remove"]("over-dark-block")
