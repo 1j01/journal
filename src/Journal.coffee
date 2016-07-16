@@ -198,16 +198,6 @@ module.exports =
 			]
 			
 			customBlockRenderMap = Map
-				# "paragraph":
-				# 	element: 'div'
-				# "unstyled":
-				# 	element: 'div'
-				# "blockquote":
-				# 	element: BlockquoteBlock
-				# "prose-block":
-				# 	element: ProseBlock
-				# "code-block":
-				# 	element: CodeBlock
 				"blockquote":
 					element: "div"
 					wrapper: E BlockquoteBlock, @props
@@ -219,7 +209,6 @@ module.exports =
 					wrapper: E CodeBlock, @props
 				"unstyled":
 					element: "div"
-					# component: EntryBlock
 			
 			@state =
 				blockRenderMap: DefaultDraftBlockRenderMap.merge(customBlockRenderMap)
@@ -249,26 +238,9 @@ module.exports =
 				switch contentBlock.getType()
 					when "media", "atomic"
 						component: MediaBlock
-						# editable: false
-					# when "code-block"
-					# 	component: CodeBlock
-					# 	# editable: false
-					# when "blockquote"
-					# 	component: BlockquoteBlock
-					# 	# editable: false
-					# when "prose-block"
-					# 	component: ProseBlock
-					# 	# editable: false
-					# else
-					# 	component: EntryBlock
-					# 	# editable: false
+						editable: false
 					when "unstyled", "paragraph"
 						component: EntryBlock
-						# editable: false
-					# else
-					# 	component: "div"
-					# else
-					# 	true
 		
 		handleKeyCommand: (command)=>
 			newState = RichUtils.handleKeyCommand(@state.editorState, command)
@@ -292,7 +264,7 @@ module.exports =
 			E ".journal",
 				E Editor, {
 					editorState
-					# readOnly
+					readOnly
 					onChange
 					spellCheck: on
 					handleKeyCommand: @handleKeyCommand
