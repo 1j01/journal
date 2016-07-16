@@ -7,13 +7,15 @@ body {
 	overflow-wrap: break-word;
 	font-family: sans-serif;
 	font-size: 1.2rem;
-	line-height: 1;
+	line-height: 1.5rem;
 }
 
-p+*, *+p, *+h1, *+h2, *+h3, *+h4, *+h5, *+ul, *+ol {
-	margin-top: 1rem;
+.code-block pre {
+	margin: 0;
+	font: inherit;
 }
 
+/* TODO: reverse italics within italics */
 blockquote,
 .prose {
 	font-style: italic;
@@ -25,27 +27,13 @@ blockquote,
 	/*border: 1px solid rgba(0, 0, 0, 0.1);*/
 	/*border-radius: 5px;*/
 }
-/*
-"-" is not an actual selector; if it was and it mirrored "+", this would work:
-
-.prose-block - .prose-block .prose {
-	border-bottom: transparent;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-}
-.prose-block + .prose-block .prose {
-	border-top: transparent;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-}
-*/
 blockquote {
 	position: relative;
 	quotes: "\201C" "\201D" "\2018" "\2019";
 	margin: 0 -1rem;
 	padding-left: 2rem;
 }
-blockquote:before {
+blockquote::before {
 	position: absolute;
 	left: 0;
 	top: 2rem;
@@ -75,10 +63,6 @@ samp {
 	margin: 0 -.03125em;
 	padding: .0625em .25em 0; /* breathing room for inline code that has a different background or an outline */
 }
-pre.public-DraftStyleDefault-pre {
-	font: inherit;
-	margin: 0;
-}
 
 hr {
 	border: 0;
@@ -92,7 +76,6 @@ hr {
 
 .code-block {
 	min-height: 1rem;
-    margin: 0;
 }
 .code-block > code {
 	display: block;
@@ -102,29 +85,8 @@ hr {
 	color: white;
 	margin: 0;
 	min-height: 1rem;
-	padding: 0 1rem;
+	padding: 0.5rem 1rem;
 	margin: 0 -1rem;
-}
-.code-block ~ .code-block::before {
-	display: none;
-}
-.code-block::before,
-/*.prose-block:not(.prose-block + .prose-block)::before { not allowed by CSS */
-.block:not(.prose-block) + .prose-block::before,
-.prose-block:first-of-type::before {
-	padding-top: 0.5rem;
-}
-pre > .code-block:first-child > code {
-	padding-top: 0.5rem;
-}
-pre > .code-block:last-child > code {
-	padding-bottom: 0.5rem;
-}
-.prose-block + .prose-block .prose {
-    padding-top: 0;
-}
-.prose-block + .prose-block {
-    margin-top: -0.5rem;
 }
 
 .block > hr {
@@ -138,6 +100,7 @@ pre > .code-block:last-child > code {
 	font-size: 0.6rem;
 	color: rgba(127, 127, 127, 0.8);
 	width: 4rem;
+	pointer-events: none;
 }
 @media (min-width: 70rem) {
 	.block::before {
@@ -163,6 +126,7 @@ pre > .code-block:last-child > code {
 	border-radius: 50%;
 	outline: none;
 }
+/* TODO: use MDL styled menus and buttons */
 .block-controls-dropdown-button:hover,
 .menuitem:hover {
 	background: rgba(127, 127, 127, 0.1);

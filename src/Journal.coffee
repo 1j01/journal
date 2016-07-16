@@ -50,10 +50,17 @@ getSelectedBlockElement = ->
 	selection = window.getSelection()
 	return null if selection.rangeCount is 0
 	node = selection.getRangeAt(0).startContainer
-	loop
-		return node if node.classList?.contains "block"
-		node = node.parentNode
-		break unless node
+	node = node.parentNode unless node.closest?
+	node.closest("[data-block='true']")
+
+getOffset = (elem)->
+	top = 0
+	left = 0
+	while elem
+		top += parseInt(elem.offsetTop)
+		left += parseInt(elem.offsetLeft)
+		elem = elem.offsetParent
+	{top, left}
 
 class StyleButton extends React.Component
 	constructor: ->
@@ -195,24 +202,24 @@ module.exports =
 				# 	element: 'div'
 				# "unstyled":
 				# 	element: 'div'
+				# "blockquote":
+				# 	element: BlockquoteBlock
+				# "prose-block":
+				# 	element: ProseBlock
+				# "code-block":
+				# 	element: CodeBlock
 				"blockquote":
-					element: 'div' # for now
+					element: "div"
+					wrapper: E BlockquoteBlock, @props
 				"prose-block":
-					element: 'div' # for now
+					element: "div"
+					wrapper: E ProseBlock, @props
 				"code-block":
-					element: 'div' # for now
-			
-			# customBlockRenderMap = new Map
-			# customBlockRenderMap.set "paragraph",
-			# 	element: 'p'
-			# customBlockRenderMap.set "unstyled",
-			# 	element: 'p'
-			# customBlockRenderMap.set "blockquote",
-			# 	element: 'blockquote'
-			# customBlockRenderMap.set "prose-block",
-			# 	element: 'div'
-			# customBlockRenderMap.set "code-block",
-			# 	element: 'div'
+					element: "pre"
+					wrapper: E CodeBlock, @props
+				"unstyled":
+					element: "div"
+					# component: EntryBlock
 			
 			@state =
 				blockRenderMap: DefaultDraftBlockRenderMap.merge(customBlockRenderMap)
@@ -243,18 +250,25 @@ module.exports =
 					when "media", "atomic"
 						component: MediaBlock
 						# editable: false
-					when "code-block"
-						component: CodeBlock
-						# editable: false
-					when "blockquote"
-						component: BlockquoteBlock
-						# editable: false
-					when "prose-block"
-						component: ProseBlock
-						# editable: false
-					else
+					# when "code-block"
+					# 	component: CodeBlock
+					# 	# editable: false
+					# when "blockquote"
+					# 	component: BlockquoteBlock
+					# 	# editable: false
+					# when "prose-block"
+					# 	component: ProseBlock
+					# 	# editable: false
+					# else
+					# 	component: EntryBlock
+					# 	# editable: false
+					when "unstyled", "paragraph"
 						component: EntryBlock
 						# editable: false
+					# else
+					# 	component: "div"
+					# else
+					# 	true
 		
 		handleKeyCommand: (command)=>
 			newState = RichUtils.handleKeyCommand(@state.editorState, command)
@@ -324,14 +338,8 @@ module.exports =
 						dropdownEl.style.display = "none"
 			
 			if menuForBlockEl
-				additionalOffsetTop =
-					if menuForBlockEl.classList.contains("code-block")
-						menuForBlockEl.querySelector("code").offsetTop
-					else if menuForBlockEl.classList.contains("prose-block")
-						menuForBlockEl.querySelector(".prose").offsetTop
-					else
-						0
-				dropdownEl.style.top = "#{menuForBlockEl.offsetTop + additionalOffsetTop}px"
-				dropdownEl.style.left = "#{menuForBlockEl.offsetLeft + menuForBlockEl.offsetWidth - 4}px"
-				dark = menuForBlockEl.classList.contains("code-block")
+				wrapperEl = menuForBlockEl.closest(".block") ? menuForBlockEl
+				dropdownEl.style.top = "#{getOffset(menuForBlockEl).top}px"
+				dropdownEl.style.left = "#{wrapperEl.offsetLeft + wrapperEl.offsetWidth - 4}px"
+				dark = wrapperEl.classList.contains("code-block")
 				dropdownEl.classList[if dark then "add" else "remove"]("over-dark-block")

@@ -1,7 +1,6 @@
 
 E = require "react-script"
 React = require "react"
-{EditorBlock} = require "draft-js"
 
 module.exports =
 	class ProseBlock extends React.Component
@@ -10,4 +9,4 @@ module.exports =
 			E "article.block.prose-block",
 				data: timestamp: "<timestamp>"
 				E ".prose",
-					E EditorBlock, @props # ??
+					@props.children

@@ -1,16 +1,24 @@
 
-# TODO: always have a placeholder for new entries at the end
+# TODO: always have a placeholder for new entries at the end, along with some margin, say half the screen height
 # TODO: improve the initial experience
 	# maybe center the first block vertically (i.e. give it 50vh margin-top)
 	# maybe make the last entry have extra height so it's easier to click on
 	# make it clear where you can click to start typing
 	# and focus it automatically so you don't have to
 
+# TODO: make it easier to put two blockquotes next to each other? (do blockquotes really need to be able to be multiline?)
+# TODO: blockquotes with attribution
+
 # TODO: drag and drop links
 # TODO: fix link/hashtag ux
+# TODO: possibly improve hashtag matching with https://github.com/draft-js-plugins/draft-js-plugins/tree/master/draft-js-hashtag-plugin
 
 # TODO: paste or drag and drop images
 # TODO: detect code when pasting, automatically make code blocks
+
+# TODO: better show when the dropdown menu will affect a range of blocks
+
+# TODO: zoom with Ctrl+mousewheel, Ctrl++, Ctrl+-, Ctrl+0 (is there a library for this?)
 
 # Done until paged loading is implemented: use arrow keys to travel between blocks
 # Done until paged loading is implemented: undo/redo
